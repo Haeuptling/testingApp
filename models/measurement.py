@@ -15,6 +15,9 @@ class Measurement(QObject):
         self.m_pressureValues = []
         self.m_relativeHumidityValues = []
 
+    def get_relative_humidity_values(self):
+        return self.m_relativeHumidityValues
+    
     def get_pressure_values(self):
         return self.m_pressureValues
 

@@ -14,6 +14,10 @@ class MeasurementView(QWidget):
         self.successfully_completed = False
         self.init_ui()
 
+        # Beenden der Messung
+        self.measurement_controller.measurement_successfully_completed.connect(self.on_measurement_successfully_completed)
+        self.measurement_controller.measurement_not_successfully_completed.connect(self.on_measurement_not_successfully_completed)
+        
         # Verbinde das Signal mit der Methode zum Aktualisieren der Druckwerte
         self.measurement_controller.m_measurement.pressureValueChanged.connect(self.update_pressure_chart)
 
@@ -35,14 +39,14 @@ class MeasurementView(QWidget):
 
         # Abort Button
         self.abort_button = QPushButton("Abort")
-        self.abort_button.setFont(QFont("", 10))
+        self.abort_button.setFont(QFont("", 12))
         self.abort_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.abort_button.clicked.connect(self.show_abort_popup)
         button_layout.addWidget(self.abort_button, alignment=Qt.AlignLeft)
 
         # Switch Button
         self.switch_button = QPushButton("Switch to Dewpoint")
-        self.switch_button.setFont(QFont("", 10))
+        self.switch_button.setFont(QFont("", 12))
         self.switch_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.switch_button.clicked.connect(self.switch_chart)
         button_layout.addWidget(self.switch_button, alignment=Qt.AlignRight)
@@ -56,7 +60,7 @@ class MeasurementView(QWidget):
         chart_view.setRenderHint(QPainter.Antialiasing)
         chart = QChart()
         chart.setTitle(title)
-        chart.setTitleFont(QFont("", 10))
+        chart.setTitleFont(QFont("", 12))
         chart.setTitleBrush(Qt.white)
         chart.setBackgroundBrush(Qt.transparent)
         chart_view.setChart(chart)
@@ -68,16 +72,16 @@ class MeasurementView(QWidget):
 
         axis_x = QValueAxis()
         axis_x.setTitleText(x_title)
-        axis_x.setTitleFont(QFont("", 10))
-        axis_x.setLabelsFont(QFont("", 10))
+        axis_x.setTitleFont(QFont("", 12))
+        axis_x.setLabelsFont(QFont("", 12))
         axis_x.setLabelsBrush(Qt.white)
-        axis_x.setRange(0, 5 if x_title == "Time in minutes" else 50)
+        axis_x.setRange(0, 5 if x_title == "Time in minutes" else 5)
         chart.setAxisX(axis_x, series)
 
         axis_y = QValueAxis()
         axis_y.setTitleText(y_title)
-        axis_y.setTitleFont(QFont("", 10))
-        axis_y.setLabelsFont(QFont("", 10))
+        axis_y.setTitleFont(QFont("", 12))
+        axis_y.setLabelsFont(QFont("", 12))
         axis_y.setLabelsBrush(Qt.white)
         axis_y.setRange(0, 400 if y_title == "Pressure in mbar" else 100)
         chart.setAxisY(axis_y, series)
@@ -102,16 +106,24 @@ class MeasurementView(QWidget):
         confirm_abort_popup.setModal(True)
         confirm_abort_popup.setFixedSize(450, 200)
         confirm_abort_popup.setWindowTitle("Confirm Abort")
+        confirm_abort_popup.setStyleSheet("background-color: #525c60;")
 
         layout = QVBoxLayout()
         label = QLabel("Do you really want to abort the measurement?")
-        label.setFont(QFont("", 10))
+        label.setFont(QFont("", 12))
         label.setAlignment(Qt.AlignCenter)
+        label.setStyleSheet("color: white;")
         layout.addWidget(label)
 
         button_box = QDialogButtonBox(QDialogButtonBox.Yes | QDialogButtonBox.No)
         button_box.button(QDialogButtonBox.Yes).setText("Yes")
         button_box.button(QDialogButtonBox.No).setText("No")
+        button_box.button(QDialogButtonBox.Yes).setFont(QFont("", 12))  # Setze die Schriftgröße auf 14
+        button_box.button(QDialogButtonBox.No).setFont(QFont("", 12))  # Setze die Schriftgröße auf 14
+        button_box.button(QDialogButtonBox.Yes).setStyleSheet("background-color: white; border-radius: 10px;")
+        button_box.button(QDialogButtonBox.No).setStyleSheet("background-color: white; border-radius: 10px;")
+        button_box.button(QDialogButtonBox.Yes).setFixedSize(100, 40)
+        button_box.button(QDialogButtonBox.No).setFixedSize(100, 40)
         button_box.button(QDialogButtonBox.Yes).clicked.connect(lambda: self.abort_measurement(confirm_abort_popup))
         button_box.button(QDialogButtonBox.No).clicked.connect(confirm_abort_popup.close)
         layout.addWidget(button_box)
@@ -141,17 +153,19 @@ class MeasurementView(QWidget):
     def show_completion_popup(self):
         completion_popup = QDialog(self)
         completion_popup.setModal(True)
-        completion_popup.setFixedSize(300, 200)
+        completion_popup.setFixedSize(400, 200)
         completion_popup.setWindowTitle("Measurement Completed")
+        completion_popup.setStyleSheet("background-color: #525c60;")
 
         layout = QVBoxLayout()
         label = QLabel("Measurement successfully completed!" if self.successfully_completed else "Measurement failed!")
-        label.setFont(QFont("", 10))
+        label.setFont(QFont("", 12))
         label.setAlignment(Qt.AlignCenter)
+        label.setStyleSheet("color: white;")
         layout.addWidget(label)
 
         button = QPushButton("OK")
-        button.setFont(QFont("", 10))
+        button.setFont(QFont("", 12))
         button.setStyleSheet("background-color: white; border-radius: 10px;")
         button.clicked.connect(completion_popup.close)
         layout.addWidget(button, alignment=Qt.AlignBottom | Qt.AlignRight)

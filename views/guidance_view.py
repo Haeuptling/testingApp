@@ -40,19 +40,19 @@ class GuidanceView(QWidget):
         # Navigation Buttons
         button_layout = QHBoxLayout()
         self.prev_button = QPushButton("Previous")
-        self.prev_button.setFont(QFont("", 10))
+        self.prev_button.setFont(QFont("", 12))
         self.prev_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.prev_button.clicked.connect(self.prev_instruction)
         button_layout.addWidget(self.prev_button)
 
         self.next_button = QPushButton("Next")
-        self.next_button.setFont(QFont("", 10))
+        self.next_button.setFont(QFont("", 12))
         self.next_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.next_button.clicked.connect(self.next_instruction)
         button_layout.addWidget(self.next_button)
 
         self.start_measurement_button = QPushButton("Start Measurement")
-        self.start_measurement_button.setFont(QFont("", 10))
+        self.start_measurement_button.setFont(QFont("", 12))
         self.start_measurement_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.start_measurement_button.clicked.connect(self.start_measurement)
         self.start_measurement_button.setVisible(False)

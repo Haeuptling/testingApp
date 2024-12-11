@@ -48,7 +48,7 @@ class MeasurementController(QObject):
         self.modus_server_worker.readRegistersAnswerSignal.connect(self.set_register_value)
         self.m_pTimerHandler.timerFinished.connect(self.on_timeout)
 
-        self.m_savingPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saved_data')
+        self.m_savingPath = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
                 
     def set_measurement(self, measurement):
@@ -179,13 +179,14 @@ class MeasurementController(QObject):
             print(f"set humidity values {register_values}")
 
     def save_data(self, result):
-        filename = f"{self.get_current_date_time()}_{Operations.toString(self.current_operation)}.Json"
-        path = self.m_savingPath+ "/saves/" + filename
-        if not self.m_pJsonHandler.create_directory_if_not_exists("saves"):
+        filename = f"{self.get_current_date_time()}_{Operations.toString(self.current_operation)}.json"
+        save_directory = os.path.join(self.m_savingPath, "saves")
+        path = os.path.join(save_directory, filename)
+        if not self.m_pJsonHandler.create_directory_if_not_exists(save_directory):
             return False
         if not self.m_pJsonHandler.create_json_file(path):
             return False
-        if not self.m_pJsonHandler.write_to_json_file(path, Operations.toString(self.current_operation), self.get_current_date_time(), self.m_measurement.pressure_values(), self.m_measurement.relative_humidity_values(), result):
+        if not self.m_pJsonHandler.write_to_json_file(path, Operations.toString(self.current_operation), self.get_current_date_time(), self.m_measurement.get_pressure_values(), self.m_measurement.get_relative_humidity_values(), result):
             return False
         return True
 
@@ -204,21 +205,24 @@ class MeasurementController(QObject):
         if self.save_data(result):
             self.m_measurement.delete_pressure_values()
             self.m_measurement.delete_relative_humidity_values()
+
         if result:
             self.measurement_successfully_completed.emit()
+            print("Measurement successfully completed")
         else:
             self.measurement_not_successfully_completed.emit()
+            print("Measurement not successfully completed")
         self.set_is_measurement_running(False)
 
     def on_interval(self, elapsed_ms):
         elapsed_seconds = elapsed_ms // 100
         print("-----------------------------------------")
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
-            #self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
+            self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
             # self.m_measurement.generate_pressure_values(elapsed_seconds, self.m_pressureValue)
             self.m_measurement.generate_pressure_values(elapsed_seconds, 50)
         elif self.current_operation == Operations.PRESSURE_TEST:
-            self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
-            self.modus_server_worker.read_registers(self.m_dewpointEmitterStartAdress, self.m_dewpointEmitterRegisters, self.m_dewpointEmitterId)
-            self.m_measurement.generate_pressure_values(elapsed_seconds, self.m_pressureValue)
-            self.m_measurement.generate_relative_humidity_values(elapsed_seconds, self.m_relativeHumidityValue)
+            # self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
+            # self.modus_server_worker.read_registers(self.m_dewpointEmitterStartAdress, self.m_dewpointEmitterRegisters, self.m_dewpointEmitterId)
+            self.m_measurement.generate_pressure_values(elapsed_seconds, 50)
+            self.m_measurement.generate_relative_humidity_values(elapsed_seconds, 50)

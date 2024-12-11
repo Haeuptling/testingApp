@@ -1,12 +1,16 @@
+import os
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListView, QLabel, QPushButton, QDialog, QAbstractItemView
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QStringListModel
+
+
 
 class ExportView(QWidget):
     def __init__(self, measurement_controller):
         super().__init__()
         self.measurement_controller = measurement_controller
         self.init_ui()
+        self.load_files()
 
     def init_ui(self):
         self.setStyleSheet("background-color: #31373A;")
@@ -57,13 +61,21 @@ class ExportView(QWidget):
         popup_layout.addLayout(button_layout)
 
         self.setLayout(main_layout)
+    
+    def load_files(self):
+        save_directory = os.path.join(self.measurement_controller.m_savingPath, "saves")
+        if not os.path.exists(save_directory):
+            os.makedirs(save_directory)
+        files = os.listdir(save_directory)
+        model = QStringListModel(files)
+        self.set_model(model)
 
     def set_model(self, model):
         self.file_list_view.setModel(model)
 
     def export_file(self, index):
         file_name = index.data()
-        result = self.measurement_controller.exportFileToUsb(file_name)
+        result = self.measurement_controller.export_file_to_usb("/saves/"+ file_name)
         if result:
             self.show_popup("File successfully exported")
         else:
