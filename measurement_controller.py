@@ -84,6 +84,8 @@ class MeasurementController(QObject):
             self.modus_server_worker.start_handler(port)
 
     def set_pressure_value(self, new_pressure_value):
+        # print(f"newPressureValue {new_pressure_value}")
+        # self.m_measurement.generate_pressure_values( new_pressure_value)
         self.m_pressureValue = new_pressure_value
 
     def is_pressure_self_test_done(self):
@@ -171,6 +173,7 @@ class MeasurementController(QObject):
         self.m_relativeHumidityValue = new_relative_humidity_value
 
     def set_register_value(self, register_values):
+        print(f"Received register values: {register_values}")
         if register_values[0] == self.m_pressureEmitterId:
             self.set_pressure_value(register_values[4])
             print(f"setPressureRegister {register_values}")
@@ -220,7 +223,6 @@ class MeasurementController(QObject):
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
             self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
             # self.m_measurement.generate_pressure_values(elapsed_seconds, self.m_pressureValue)
-            self.m_measurement.generate_pressure_values(elapsed_seconds, 50)
         elif self.current_operation == Operations.PRESSURE_TEST:
             # self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
             # self.modus_server_worker.read_registers(self.m_dewpointEmitterStartAdress, self.m_dewpointEmitterRegisters, self.m_dewpointEmitterId)

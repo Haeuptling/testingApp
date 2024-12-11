@@ -33,20 +33,34 @@ class MeasurementView(QWidget):
         main_layout.addWidget(self.chart_view_pressure)
         main_layout.addWidget(self.chart_view_dewpoint)
 
+        # Current Value Labels
+        self.current_pressure_label = QLabel("Current Pressure: 0 mbar")
+        self.current_pressure_label.setFont(QFont("", 12))
+        self.current_pressure_label.setStyleSheet("color: white;")
+        self.current_pressure_label.setAlignment(Qt.AlignRight)
+        main_layout.addWidget(self.current_pressure_label)
+
+        self.current_dewpoint_label = QLabel("Current Dewpoint: 0 %")
+        self.current_dewpoint_label.setFont(QFont("", 12))
+        self.current_dewpoint_label.setStyleSheet("color: white;")
+        self.current_dewpoint_label.setAlignment(Qt.AlignRight)
+        self.current_dewpoint_label.setVisible(False)
+        main_layout.addWidget(self.current_dewpoint_label)
+
         # Button Layout
         button_layout = QHBoxLayout()
         button_layout.setContentsMargins(20, 20, 20, 20)
 
         # Abort Button
         self.abort_button = QPushButton("Abort")
-        self.abort_button.setFont(QFont("", 12))
+        self.abort_button.setFont(QFont("", 18))
         self.abort_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.abort_button.clicked.connect(self.show_abort_popup)
         button_layout.addWidget(self.abort_button, alignment=Qt.AlignLeft)
 
         # Switch Button
         self.switch_button = QPushButton("Switch to Dewpoint")
-        self.switch_button.setFont(QFont("", 12))
+        self.switch_button.setFont(QFont("", 18))
         self.switch_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.switch_button.clicked.connect(self.switch_chart)
         button_layout.addWidget(self.switch_button, alignment=Qt.AlignRight)
@@ -99,6 +113,8 @@ class MeasurementView(QWidget):
         self.show_first_chart = not self.show_first_chart
         self.chart_view_pressure.setVisible(self.show_first_chart)
         self.chart_view_dewpoint.setVisible(not self.show_first_chart)
+        self.current_pressure_label.setVisible(self.show_first_chart)
+        self.current_dewpoint_label.setVisible(not self.show_first_chart)
         self.switch_button.setText("Switch to Dewpoint" if self.show_first_chart else "Switch to Overpressure")
 
     def show_abort_popup(self):
@@ -118,8 +134,8 @@ class MeasurementView(QWidget):
         button_box = QDialogButtonBox(QDialogButtonBox.Yes | QDialogButtonBox.No)
         button_box.button(QDialogButtonBox.Yes).setText("Yes")
         button_box.button(QDialogButtonBox.No).setText("No")
-        button_box.button(QDialogButtonBox.Yes).setFont(QFont("", 12))  # Setze die Schriftgröße auf 14
-        button_box.button(QDialogButtonBox.No).setFont(QFont("", 12))  # Setze die Schriftgröße auf 14
+        button_box.button(QDialogButtonBox.Yes).setFont(QFont("", 18))  # Setze die Schriftgröße auf 14
+        button_box.button(QDialogButtonBox.No).setFont(QFont("", 18))  # Setze die Schriftgröße auf 14
         button_box.button(QDialogButtonBox.Yes).setStyleSheet("background-color: white; border-radius: 10px;")
         button_box.button(QDialogButtonBox.No).setStyleSheet("background-color: white; border-radius: 10px;")
         button_box.button(QDialogButtonBox.Yes).setFixedSize(100, 40)
@@ -159,13 +175,13 @@ class MeasurementView(QWidget):
 
         layout = QVBoxLayout()
         label = QLabel("Measurement successfully completed!" if self.successfully_completed else "Measurement failed!")
-        label.setFont(QFont("", 12))
+        label.setFont(QFont("", 18))
         label.setAlignment(Qt.AlignCenter)
         label.setStyleSheet("color: white;")
         layout.addWidget(label)
 
         button = QPushButton("OK")
-        button.setFont(QFont("", 12))
+        button.setFont(QFont("", 18))
         button.setStyleSheet("background-color: white; border-radius: 10px;")
         button.clicked.connect(completion_popup.close)
         layout.addWidget(button, alignment=Qt.AlignBottom | Qt.AlignRight)
@@ -183,3 +199,18 @@ class MeasurementView(QWidget):
             self.series_pressure.append(value)
             if value.x() >= self.axis_x_pressure.max() - 1:
                 self.axis_x_pressure.setMax(self.axis_x_pressure.max() + 5)
+        if pressure_values:
+            current_value = pressure_values[-1].y()
+            self.current_pressure_label.setText(f"Current Pressure: {current_value} mbar")
+
+    @pyqtSlot()
+    def update_dewpoint_chart(self):
+        print("Update dewpoint chart")
+        dewpoint_values = self.measurement_controller.m_measurement.get_relative_humidity_values()
+        self.series_dewpoint.clear()
+        for value in dewpoint_values:
+            print("Update dewpoint chart", value)
+            self.series_dewpoint.append(value)
+            self.current_dewpoint_label.setText(f"Current Dewpoint: {value.y()} %")
+            if value.x() >= self.axis_x_dewpoint.max() - 1:
+                self.axis_x_dewpoint.setMax(self.axis_x_dewpoint.max() + 5)

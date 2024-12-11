@@ -47,7 +47,8 @@ class ModbusServer(QObject):
 
     def handle_read_registers(self, start_address, number_of_registers, slave_id):
         register_values = []
-
+        print("handle read registers")
+        self.serverRegisterAnswer.emit([2   , 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
         if self.modbus_client:
             result = self.modbus_client.read_holding_registers(
                 address=start_address,
