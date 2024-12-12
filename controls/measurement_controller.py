@@ -1,14 +1,15 @@
 import os
+import json
 
-from PyQt5.QtCore import QObject, pyqtSignal, QTimer, QDir, QDateTime
+from PyQt5.QtCore import QObject, pyqtSignal, QDir, QDateTime
 
-from modbus_server_worker import ModbusServerWorker
+from controls.modbus_server_worker import ModbusServerWorker
 from models.operations import Operations
-from config_manager import ConfigManager
+from controls.config_manager import ConfigManager
 from models.guidance import Guidance
 from models.measurement import Measurement
-from timer import TimerHandler
-from saver import JsonHandler
+from controls.timer import TimerHandler
+from models.saver import JsonHandler
 
 from views.main_view import MainView
 from views.home_view import HomeView
@@ -21,7 +22,7 @@ class MeasurementController(QObject):
 
 
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
         self.modus_server_worker = ModbusServerWorker()
         self.m_pTimerHandler = TimerHandler()
@@ -31,7 +32,9 @@ class MeasurementController(QObject):
         self.isMeasurementRunning = False
         self.m_isPressureSelfTestDone = False
         self.m_measurement = Measurement()
-
+        self.main_window = main_window
+        self.m_pressureValue = 0
+        self.m_relativeHumidityValue = 0
         config = ConfigManager()
         self.m_totalDurationPressure = config.get_total_duration_min() * self.m_pTimerHandler.msMultiplier * self.m_pTimerHandler.minMultiplier
         self.m_intervalTime = config.get_interval_time_s() * self.m_pTimerHandler.msMultiplier
@@ -48,7 +51,8 @@ class MeasurementController(QObject):
         self.modus_server_worker.readRegistersAnswerSignal.connect(self.set_register_value)
         self.m_pTimerHandler.timerFinished.connect(self.on_timeout)
 
-        self.m_savingPath = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+        self.m_savingPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        print(f"Saving path: {self.m_savingPath}")
 
                 
     def set_measurement(self, measurement):
@@ -69,14 +73,14 @@ class MeasurementController(QObject):
         return files
 
     def start_overpressure_measurement(self):
-        port = "COM6"
+        port = "/dev/ttyUSB0"
         if not self.get_is_measurement_running():
             self.set_is_measurement_running(True)
             self.m_pTimerHandler.start_timer(self.m_totalDurationPressure, self.m_intervalTime)
             self.modus_server_worker.start_handler(port)
 
     def start_selftest_overpressure_measurement(self):
-        port = "COM6"
+        port = "/dev/ttyUSB0"
         if not self.get_is_measurement_running():
             print(f"m_totalDurationPressure {self.m_totalDurationPressure} m_intervalTime {self.m_intervalTime}")
             self.set_is_measurement_running(True)
@@ -95,6 +99,7 @@ class MeasurementController(QObject):
         self.m_isPressureSelfTestDone = new_is_pressure_self_test_done
 
     def export_file_to_usb(self, source_file_path):
+        destination_directory = "path_to_usb_drive"  # Passen Sie diesen Pfad an
         return self.m_pJsonHandler.export_file_to_usb(self.m_savingPath + source_file_path)
 
     def update_settings(self):
@@ -120,9 +125,7 @@ class MeasurementController(QObject):
         return self.current_operation
 
     def set_current_operation(self, new_current_operation):
-        print(f"newCurrentOperation {new_current_operation}")
         self.current_operation = new_current_operation
-        print(f"current_operation {self.current_operation}")
 
     def get_is_measurement_running(self):
         return self.isMeasurementRunning
@@ -134,7 +137,6 @@ class MeasurementController(QObject):
         pass
 
     def get_image_at(self, index):
-        print("get_image_at " , self.current_operation)
         images = []
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
             images = self.m_pGuidance.get_overpressure_self_test_images()
@@ -143,7 +145,6 @@ class MeasurementController(QObject):
         return images[index] if 0 <= index < len(images) else ""
 
     def get_instruction_at(self, index):
-        print("index " , index)
         instructions = []
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
             instructions = self.m_pGuidance.get_overpressure_self_test_instruction_texts()
@@ -153,7 +154,6 @@ class MeasurementController(QObject):
 
     def get_instruction_count(self):
         count = -1
-        print(f"current_operation {self.current_operation}")
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
             count = len(self.m_pGuidance.get_overpressure_self_test_instruction_texts())
         elif self.current_operation == Operations.PRESSURE_TEST:
@@ -176,22 +176,10 @@ class MeasurementController(QObject):
         print(f"Received register values: {register_values}")
         if register_values[0] == self.m_pressureEmitterId:
             self.set_pressure_value(register_values[4])
-            print(f"setPressureRegister {register_values}")
+            print(f"setPressureRegister {register_values[4]}")
         elif register_values[0] == self.m_dewpointEmitterId:
             self.set_relative_humidity_value(register_values[0])
             print(f"set humidity values {register_values}")
-
-    def save_data(self, result):
-        filename = f"{self.get_current_date_time()}_{Operations.toString(self.current_operation)}.json"
-        save_directory = os.path.join(self.m_savingPath, "saves")
-        path = os.path.join(save_directory, filename)
-        if not self.m_pJsonHandler.create_directory_if_not_exists(save_directory):
-            return False
-        if not self.m_pJsonHandler.create_json_file(path):
-            return False
-        if not self.m_pJsonHandler.write_to_json_file(path, Operations.toString(self.current_operation), self.get_current_date_time(), self.m_measurement.get_pressure_values(), self.m_measurement.get_relative_humidity_values(), result):
-            return False
-        return True
 
     def get_current_date_time(self):
         current = QDateTime.currentDateTime()
@@ -209,22 +197,54 @@ class MeasurementController(QObject):
             self.m_measurement.delete_pressure_values()
             self.m_measurement.delete_relative_humidity_values()
 
+        current_time = self.get_current_date_time()
+        screenshot_path = os.path.join(self.m_savingPath, 'saves', f"{current_time}.png")
+        pdf_path = os.path.join(self.m_savingPath, 'saves', f"{current_time}_{Operations.toString(self.current_operation)}.pdf")
+        # pdf_path = os.path.join(self.m_savingPath, 'saves', f"{current_time}.pdf")
+        text = f"Measurement: {Operations.toString(self.current_operation)} successful: {result} \n"
+
+        if self.m_pJsonHandler.take_screenshot(screenshot_path, self.main_window):
+            self.m_pJsonHandler.save_screenshot_to_pdf(screenshot_path, pdf_path, text)
+            os.remove(screenshot_path)  # Entfernen der temporären Bilddatei
+        else:
+            print("Failed to take screenshot")
+
         if result:
             self.measurement_successfully_completed.emit()
             print("Measurement successfully completed")
         else:
             self.measurement_not_successfully_completed.emit()
-            print("Measurement not successfully completed")
         self.set_is_measurement_running(False)
+
+    def save_data(self, result):
+        current_time = self.get_current_date_time()
+        path = os.path.join(self.m_savingPath, 'saves', f"{current_time}_{Operations.toString(self.current_operation)}.json")
+        if not self.m_pJsonHandler.create_json_file(path):
+            return False
+
+        data = {
+            'result': result,
+            'timestamp': current_time,
+            'operation': Operations.toString(self.current_operation)
+        }
+
+        try:
+            with open(path, 'w') as file:
+                json.dump(data, file)
+            print(f"Data wrote to JSON: {path}")
+            return True
+        except IOError as e:
+            print(f"Error writing to JSON: {path}, {e}")
+            return False
 
     def on_interval(self, elapsed_ms):
         elapsed_seconds = elapsed_ms // 100
         print("-----------------------------------------")
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
             self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
-            # self.m_measurement.generate_pressure_values(elapsed_seconds, self.m_pressureValue)
+            self.m_measurement.generate_pressure_values(elapsed_seconds, self.m_pressureValue)
         elif self.current_operation == Operations.PRESSURE_TEST:
             # self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
-            # self.modus_server_worker.read_registers(self.m_dewpointEmitterStartAdress, self.m_dewpointEmitterRegisters, self.m_dewpointEmitterId)
-            self.m_measurement.generate_pressure_values(elapsed_seconds, 50)
-            self.m_measurement.generate_relative_humidity_values(elapsed_seconds, 50)
+            self.modus_server_worker.read_registers(self.m_dewpointEmitterStartAdress, self.m_dewpointEmitterRegisters, self.m_dewpointEmitterId)
+            # self.m_measurement.generate_pressure_values(elapsed_seconds, 50)
+            self.m_measurement.generate_relative_humidity_values(elapsed_seconds, self.m_relativeHumidityValue)

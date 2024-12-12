@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSpinBox, QSlider, QPushButton
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
-from config_manager import ConfigManager
+from controls.config_manager import ConfigManager
 
 class SettingsView(QWidget):
     def __init__(self, measurement_controller, main_view):

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from pymodbus.client import ModbusSerialClient as ModbusClient
-from config_manager import ConfigManager
+from controls.config_manager import ConfigManager
 
 class ModbusServer(QObject):
     errorOccurred = pyqtSignal(str)
@@ -18,6 +18,7 @@ class ModbusServer(QObject):
         self.m_dataBits = config.get_data_bits()
         self.m_timeout = config.get_timeout()
         self.m_retries = config.get_retries()
+        
 
     def __del__(self):
         if self.modbus_client:
@@ -28,7 +29,7 @@ class ModbusServer(QObject):
 
         if not self.modbus_client:
             self.modbus_client = ModbusClient(
-                method='rtu',
+                #method='rtu',
                 port=port,
                 baudrate=self.m_baudRate,
                 parity=self.m_parity,
@@ -40,15 +41,14 @@ class ModbusServer(QObject):
         if not self.modbus_client.connect():
             print("connection err")
             self.errorOccurred.emit("Connection error")
-            return False
+            #return False
 
         print("Modbus Connected")
         return True
 
     def handle_read_registers(self, start_address, number_of_registers, slave_id):
         register_values = []
-        print("handle read registers")
-        self.serverRegisterAnswer.emit([2   , 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
+
         if self.modbus_client:
             result = self.modbus_client.read_holding_registers(
                 address=start_address,

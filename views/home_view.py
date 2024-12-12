@@ -1,3 +1,4 @@
+import os
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDialog, QDialogButtonBox
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtCore import Qt
@@ -55,13 +56,16 @@ class HomeView(QWidget):
         main_layout.setAlignment(button_row, Qt.AlignTop | Qt.AlignHCenter)
 
         # Logo
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(base_path, "images/Q_logo.png")
         logo_label = QLabel(self)
-        pixmap = QPixmap("resources/Q_logo.png")
-        logo_label.setPixmap(pixmap)
-        logo_label.setAlignment(Qt.AlignBottom | Qt.AlignRight)
-
-        # Add the logo to the main layout
-        main_layout.addWidget(logo_label, alignment=Qt.AlignBottom | Qt.AlignRight)
+        pixmap = QPixmap(logo_path)
+        if pixmap.isNull():
+            print("Logo file not found or path is incorrect")
+        else:
+            logo_label.setPixmap(pixmap)
+            logo_label.setAlignment(Qt.AlignBottom | Qt.AlignRight)
+            main_layout.addWidget(logo_label)
 
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(main_container)

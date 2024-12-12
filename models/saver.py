@@ -1,9 +1,14 @@
 import os
+
 import json
 import shutil
 from PyQt5.QtCore import QObject, QPointF
 from PyQt5.QtCore import QDir, QFile, QIODevice
 from PyQt5.QtCore import QJsonDocument # QJsonObject, QJsonArray
+from PyQt5.QtGui import QGuiApplication, QScreen
+from PyQt5.QtWidgets import QApplication
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 class JsonHandler(QObject):
     def __init__(self, parent=None):
@@ -34,63 +39,64 @@ class JsonHandler(QObject):
             print(f"Error creating JSON: {file_path}, {e}")
             return False
 
-    def write_to_json_file(self, file_path, type_measurement, date, pressure_data, dewpoint_data, result):
-        if not os.path.exists(file_path):
-            print(f"JSON file not existing: {file_path}")
+    def take_screenshot(self, save_path, window):
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+
+        screen = QGuiApplication.primaryScreen()
+        if screen is None:
+            print("No screen found")
             return False
 
-        try:
-            with open(file_path, 'r+') as file:
-                json_data = json.load(file)
+        # Fenster-ID 
+        window_id = window.winId()
+        screenshot = screen.grabWindow(window_id)
+        
+        return screenshot.save(save_path, "png")
 
-                # Create arrays for data points
-                data_array_pressure = [f"{val.x()}:{val.y()}" for val in pressure_data]
-                data_array_dewpoint = [f"{val.x()}:{val.y()}" for val in dewpoint_data]
+    def save_screenshot_to_pdf(self, image_path, pdf_path, text):
+        # Create PDF
+        pdf = canvas.Canvas(pdf_path, pagesize=letter)
+        width, height = letter
 
-                # Insert data
-                json_data["PressureData"] = data_array_pressure
-                json_data["DewpointData"] = data_array_dewpoint
-                json_data["Date"] = date
-                json_data["MeasurementSuccessful"] = result
-                json_data["Measurement"] = type_measurement
+        # Add text to PDF
+        pdf.drawString(100, height - 100, text)
 
-                # Save data
-                file.seek(0)
-                json.dump(json_data, file, indent=4)
-                file.truncate()
+        # Add screenshot to PDF
+        pdf.drawImage(image_path, 100, height - 500, width=400, height=400)
 
-            print(f"Data wrote to JSON: {file_path}")
-            return True
-        except IOError as e:
-            print(f"Error while writing to JSON: {file_path}, {e}")
-            return False
+        pdf.save()
+        print(f"PDF saved: {pdf_path}")
 
     def export_file_to_usb(self, source_file_path):
         usb_mount_path = ""
 
-        if os.name == 'posix':
-            media_dir = "/media"
-            if os.path.exists(media_dir):
-                devices = [d for d in os.listdir(media_dir) if os.path.isdir(os.path.join(media_dir, d))]
-                if devices:
-                    usb_mount_path = os.path.join(media_dir, devices[0])  # Takes first found USB stick
-        elif os.name == 'nt':
+        # Erkennung von USB-Laufwerken unter Windows
+        if os.name == 'nt':
             for drive in range(ord('D'), ord('Z') + 1):
                 path = f"{chr(drive)}:/"
                 if os.path.exists(path):
                     usb_mount_path = path
                     break
-        else:
-            print("OS not supported")
-            return False
+        # Erkennung von USB-Laufwerken unter Linux
+        elif os.name == 'posix':
+            media_dir = "/media"
+            if os.path.exists(media_dir):
+                devices = [d for d in os.listdir(media_dir) if os.path.isdir(os.path.join(media_dir, d))]
+                if devices:
+                    usb_mount_path = os.path.join(media_dir, devices[0])
 
+        # Überprüfen, ob ein USB-Stick gefunden wurde
         if not usb_mount_path:
             print("No USB stick found")
             return False
 
+        # Pfad auf dem USB-Stick erstellen
         file_name = os.path.basename(source_file_path)
         destination_file_path = os.path.join(usb_mount_path, file_name)
 
+        # Daten kopieren
         if not os.path.exists(source_file_path):
             print(f"The source file does not exist: {source_file_path}")
             return False

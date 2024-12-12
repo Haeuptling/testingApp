@@ -22,7 +22,7 @@ class Guidance:
             "5. Disconnect the test system from the DUT",
             "6. Connect the hoses of the DUT to the test system",
             "7. Open the shut-off valve of the DUT",
-            "8. Slowly set the pressure regulator \n to the test pressure of 200 mbar"
+            "8. Slowly set the pressure regulator to the test pressure of 200 mbar"
         ]
 
         self.overpressure_images = [
@@ -34,7 +34,7 @@ class Guidance:
         self.overpressure_instruction_texts = [
             "9. Connect the hoses of the DUT to the test system",
             "10. Open the shut-off valve of the DUT",
-            "11. Check the pressure gauge until \n the test pressure is constantly reached"
+            "11. Check the pressure gauge until the test pressure is constantly reached"
         ]
 
         self.overpressure_self_test_images = [
@@ -43,7 +43,7 @@ class Guidance:
         ]
 
         self.overpressure_self_test_instruction_texts = [
-            "9. Check the pressure gauge until the test \n pressure is constantly reached",
+            "9. Check the pressure gauge until the test pressure is constantly reached",
             "10. Close the inlet valve"
         ]
 

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QObject, pyqtSignal, QPointF
-from config_manager import ConfigManager
+from controls.config_manager import ConfigManager
 import math
 
 class Measurement(QObject):
@@ -39,11 +39,19 @@ class Measurement(QObject):
         self.relativeHumidityValueChanged.emit()
 
     def evaluate_relative_humidity(self):
+
+        if(len(self.m_relativeHumidityValues) == 0):
+            return False
+        
         min_max = self.find_min_max(self.m_relativeHumidityValues)
         percentage_difference = self.calculate_percentage_difference(min_max[0].y(), min_max[1].y())
         return percentage_difference <= self.maximum_relative_humidity_difference_in_percent
 
     def evaluate_pressure(self):
+
+        if(len(self.m_pressureValues) == 0):
+            return False
+        
         min_max = self.find_min_max(self.m_pressureValues)
         percentage_difference = self.calculate_percentage_difference(min_max[0].y(), min_max[1].y())
         result = percentage_difference <= self.maximum_pressure_difference_in_percent

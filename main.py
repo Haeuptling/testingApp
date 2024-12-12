@@ -1,21 +1,21 @@
 from PyQt5.QtWidgets import QApplication
-from config_manager import ConfigManager
-from measurement_controller import MeasurementController
+
+from controls.config_manager import ConfigManager
+from controls.measurement_controller import MeasurementController
 from views.main_view import MainView
 from views.home_view import HomeView
 from views.measurement_view import MeasurementView
-# from views.export_view import ExportView
-# from views.settings_view import SettingsView
 from views.guidance_view import GuidanceView
 
 class AppController:
     def __init__(self):
         # Erzeuge MeasurementController und View
         self.config = ConfigManager()
-        self.measurement_controller = MeasurementController()
         self.app = QApplication([])
-
+        
+        self.measurement_controller = MeasurementController()
         self.main_view = MainView(measurement_controller=self.measurement_controller)
+        self.measurement_controller.main_window = self.main_view
 
 
         # Setze Fenstergröße und Vollbildmodus

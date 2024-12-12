@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QStackedWidget, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QStackedWidget, QSizePolicy, QMainWindow
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 
@@ -8,20 +8,20 @@ from views.guidance_view import GuidanceView
 from views.export_view import ExportView
 from views.settings_view import SettingsView
 
-class MainView(QWidget):
+class MainView(QMainWindow):
     view_changed = pyqtSignal(str)
 
-    def __init__(self, measurement_controller):
-        super().__init__()
+    def __init__(self, measurement_controller, parent=None):
+        super().__init__(parent)
         self.measurement_controller = measurement_controller
         self.init_ui()
 
     def init_ui(self):
-        main_layout = QHBoxLayout(self)
+        central_widget = QWidget()
+        main_layout = QHBoxLayout(central_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         self.setStyleSheet("background-color: #525c60;")
-
 
         # Menu container with background color
         menu_container = QWidget()
@@ -57,12 +57,6 @@ class MainView(QWidget):
         measurement_button.clicked.connect(lambda: self.view_changed.emit("MeasurementView"))
         menu_layout.addWidget(measurement_button)
 
-        guidance_button = QPushButton("Guidance")
-        guidance_button.setFont(QFont("", 18))
-        guidance_button.setStyleSheet(button_style)
-        guidance_button.clicked.connect(lambda: self.view_changed.emit("GuidanceView"))
-        menu_layout.addWidget(guidance_button)
-
         export_button = QPushButton("Export")
         export_button.setFont(QFont("", 18))
         export_button.setStyleSheet(button_style)
@@ -81,7 +75,7 @@ class MainView(QWidget):
         self.content_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         main_layout.addWidget(self.content_view)
 
-        self.setLayout(main_layout)
+        self.setCentralWidget(central_widget)
 
         # Erzeuge und füge die verschiedenen Views hinzu
         self.home_view = HomeView(measurement_controller=self.measurement_controller, main_view=self)
