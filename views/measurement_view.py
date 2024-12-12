@@ -169,7 +169,7 @@ class MeasurementView(QWidget):
     def show_completion_popup(self):
         completion_popup = QDialog(self)
         completion_popup.setModal(True)
-        completion_popup.setFixedSize(400, 200)
+        completion_popup.setFixedSize(500, 200)
         completion_popup.setWindowTitle("Measurement Completed")
         completion_popup.setStyleSheet("background-color: #525c60;")
 
