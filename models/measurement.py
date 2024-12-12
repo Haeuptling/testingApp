@@ -4,7 +4,6 @@ import math
 
 class Measurement(QObject):
     pressureValueChanged = pyqtSignal()
-    pressureValueChanged = pyqtSignal()
     relativeHumidityValueChanged = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -36,6 +35,7 @@ class Measurement(QObject):
         temp_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
         temp_val.setY(relative_humidity_value)
         self.m_relativeHumidityValues.append(temp_val)
+        print("Relative Humidity Value: ", relative_humidity_value)
         self.relativeHumidityValueChanged.emit()
 
     def evaluate_relative_humidity(self):
@@ -90,9 +90,9 @@ class Measurement(QObject):
 
         for point in data:
             if point.y() < min_point.y():
-                min_point.setY(point.y())
+                min_point = point  
             if point.y() > max_point.y():
-                max_point.setY(point.y())
+                max_point = point  
 
         return [min_point, max_point]
 

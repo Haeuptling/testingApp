@@ -1,5 +1,6 @@
 import os
 import json
+import struct
 
 from PyQt5.QtCore import QObject, pyqtSignal, QDir, QDateTime
 
@@ -19,8 +20,6 @@ class MeasurementController(QObject):
     timerFinished = pyqtSignal()
     measurement_successfully_completed = pyqtSignal()
     measurement_not_successfully_completed = pyqtSignal()
-
-
 
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
@@ -54,7 +53,6 @@ class MeasurementController(QObject):
         self.m_savingPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         print(f"Saving path: {self.m_savingPath}")
 
-                
     def set_measurement(self, measurement):
         self.m_measurement = measurement
 
@@ -88,8 +86,6 @@ class MeasurementController(QObject):
             self.modus_server_worker.start_handler(port)
 
     def set_pressure_value(self, new_pressure_value):
-        # print(f"newPressureValue {new_pressure_value}")
-        # self.m_measurement.generate_pressure_values( new_pressure_value)
         self.m_pressureValue = new_pressure_value
 
     def is_pressure_self_test_done(self):
@@ -121,7 +117,7 @@ class MeasurementController(QObject):
     def set_interval_time(self, new_interval_time):
         self.m_intervalTime = new_interval_time
 
-    def current_operation(self):
+    def get_current_operation(self):
         return self.current_operation
 
     def set_current_operation(self, new_current_operation):
@@ -177,8 +173,10 @@ class MeasurementController(QObject):
         if register_values[0] == self.m_pressureEmitterId:
             self.set_pressure_value(register_values[4])
             print(f"setPressureRegister {register_values[4]}")
-        elif register_values[0] == self.m_dewpointEmitterId:
-            self.set_relative_humidity_value(register_values[0])
+        else:
+            registers = [register_values[0], register_values[1]]
+            float_value = self.interpret_registers_as_float(registers)
+            self.set_relative_humidity_value(float_value)
             print(f"set humidity values {register_values}")
 
     def get_current_date_time(self):
@@ -200,7 +198,6 @@ class MeasurementController(QObject):
         current_time = self.get_current_date_time()
         screenshot_path = os.path.join(self.m_savingPath, 'saves', f"{current_time}.png")
         pdf_path = os.path.join(self.m_savingPath, 'saves', f"{current_time}_{Operations.toString(self.current_operation)}.pdf")
-        # pdf_path = os.path.join(self.m_savingPath, 'saves', f"{current_time}.pdf")
         text = f"Measurement: {Operations.toString(self.current_operation)} successful: {result} \n"
 
         if self.m_pJsonHandler.take_screenshot(screenshot_path, self.main_window):
@@ -215,6 +212,17 @@ class MeasurementController(QObject):
         else:
             self.measurement_not_successfully_completed.emit()
         self.set_is_measurement_running(False)
+
+    def interpret_registers_as_float(self, registers):
+        if len(registers) == 2:
+            # Kombinieren der Registerwerte zu einem 32-Bit-Wert
+            combined = (registers[0] << 16) | registers[1]
+            # Interpretation als FLOAT
+            float_value = struct.unpack('>f', combined.to_bytes(4, byteorder='big'))[0]
+            return float_value
+        else:
+            print("Unexpected number of registers")
+            return None
 
     def save_data(self, result):
         current_time = self.get_current_date_time()
@@ -244,7 +252,6 @@ class MeasurementController(QObject):
             self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
             self.m_measurement.generate_pressure_values(elapsed_seconds, self.m_pressureValue)
         elif self.current_operation == Operations.PRESSURE_TEST:
-            # self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
-            self.modus_server_worker.read_registers(self.m_dewpointEmitterStartAdress, self.m_dewpointEmitterRegisters, self.m_dewpointEmitterId)
-            # self.m_measurement.generate_pressure_values(elapsed_seconds, 50)
+            self.modus_server_worker.read_registers(self.m_pressureEmitterStartAdress, self.m_pressureEmitterRegisters, self.m_pressureEmitterId)
+            self.modus_server_worker.read_registers(2301, self.m_dewpointEmitterRegisters, self.m_dewpointEmitterId)
             self.m_measurement.generate_relative_humidity_values(elapsed_seconds, self.m_relativeHumidityValue)

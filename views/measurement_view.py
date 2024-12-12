@@ -20,7 +20,7 @@ class MeasurementView(QWidget):
         
         # Verbinde das Signal mit der Methode zum Aktualisieren der Druckwerte
         self.measurement_controller.m_measurement.pressureValueChanged.connect(self.update_pressure_chart)
-
+        self.measurement_controller.m_measurement.relativeHumidityValueChanged.connect(self.update_dewpoint_chart)  
     def init_ui(self):
         self.setStyleSheet("background-color: #525c60;")
         main_layout = QVBoxLayout(self)
