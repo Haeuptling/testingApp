@@ -63,7 +63,7 @@ class ExportView(QWidget):
         self.setLayout(main_layout)
     
     def load_files(self):
-        save_directory = os.path.join(self.measurement_controller.m_savingPath, "saves")
+        save_directory = os.path.join(self.measurement_controller.saving_path, "saves")
         if not os.path.exists(save_directory):
             os.makedirs(save_directory)
         files = os.listdir(save_directory)

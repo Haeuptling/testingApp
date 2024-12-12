@@ -85,6 +85,6 @@ class SettingsView(QWidget):
 
         self.setLayout(main_layout)
 
-    def save_settings(self):
-        self.config_manager.save()
-        self.measurement_controller.updateSettings()
+    # def save_settings(self):
+    #     self.config_manager.save()
+    #     self.measurement_controller.updateSettings()

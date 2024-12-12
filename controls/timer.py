@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QObject, QTimer, QElapsedTimer, pyqtSignal
 
-class TimerHandler(QObject):
+class Timer(QObject):
     intervalElapsed = pyqtSignal(int)
     timerFinished = pyqtSignal()
 
@@ -9,26 +9,26 @@ class TimerHandler(QObject):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.m_totalDuration = 0
-        self.m_intervalTimer = QTimer(self)
-        self.m_elapsedTimer = QElapsedTimer()
-        self.m_intervalTimer.timeout.connect(self.on_interval)
+        self.total_duration = 0
+        self.interval_timer = QTimer(self)
+        self.elapsed_timer = QElapsedTimer()
+        self.interval_timer.timeout.connect(self.on_interval)
 
     def start_timer(self, duration_ms, interval_ms):
-        self.m_totalDuration = duration_ms
-        self.m_elapsedTimer.start()
-        self.m_intervalTimer.start(interval_ms)
+        self.total_duration = duration_ms
+        self.elapsed_timer.start()
+        self.interval_timer.start(interval_ms)
         print(f"Timer started for {duration_ms} ms with an interval of {interval_ms} ms.")
 
     def stop_timer(self):
-        self.m_intervalTimer.stop()
+        self.interval_timer.stop()
 
     def on_interval(self):
-        elapsed_ms = self.m_elapsedTimer.elapsed()
+        elapsed_ms = self.elapsed_timer.elapsed()
         self.intervalElapsed.emit(elapsed_ms)
         print(f"Interval elapsed: {elapsed_ms} ms.")
 
-        if elapsed_ms >= self.m_totalDuration:
-            self.m_intervalTimer.stop()
+        if elapsed_ms >= self.total_duration:
+            self.interval_timer.stop()
             self.timerFinished.emit()
             print("Timer finished.")

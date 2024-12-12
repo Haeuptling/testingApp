@@ -8,20 +8,20 @@ class ModbusServerWorker(QThread):
 
     def __init__(self, parent=None, controller=None):
         super().__init__(parent)
-        self.m_modbusServer = None
-        self.m_measurementController = controller
+        self.modbus_server = None
+        self.measurement_controller = controller
 
     def __del__(self):
-        self.stop_handler()
+        self.stop_worker()
 
     def run(self):
-        self.m_modbusServer = ModbusServer()
-        self.startModbus.connect(self.m_modbusServer.connect_modbus)
-        self.readRegistersSignal.connect(self.m_modbusServer.handle_read_registers)
-        self.m_modbusServer.serverRegisterAnswer.connect(self.read_registers_answer_slot)
+        self.modbus_server = ModbusServer()
+        self.startModbus.connect(self.modbus_server.connect_modbus)
+        self.readRegistersSignal.connect(self.modbus_server.handle_read_registers)
+        self.modbus_server.serverRegisterAnswer.connect(self.read_registers_answer_slot)
         self.exec_()
 
-    def start_handler(self, port):
+    def start_worker(self, port):
         if not self.isRunning():
             self.start()
             print("start Handler")
@@ -31,10 +31,10 @@ class ModbusServerWorker(QThread):
     def emit_start_modbus(self, port):
         self.startModbus.emit(port)
 
-    def stop_handler(self):
-        if self.m_modbusServer:
-            self.m_modbusServer.deleteLater()
-            self.m_modbusServer = None
+    def stop_worker(self):
+        if self.modbus_server:
+            self.modbus_server.deleteLater()
+            self.modbus_server = None
 
         self.quit()
         self.wait()

@@ -19,8 +19,8 @@ class MeasurementView(QWidget):
         self.measurement_controller.measurement_not_successfully_completed.connect(self.on_measurement_not_successfully_completed)
         
         # Verbinde das Signal mit der Methode zum Aktualisieren der Druckwerte
-        self.measurement_controller.m_measurement.pressureValueChanged.connect(self.update_pressure_chart)
-        self.measurement_controller.m_measurement.relativeHumidityValueChanged.connect(self.update_dewpoint_chart)  
+        self.measurement_controller.measurement.pressureValueChanged.connect(self.update_pressure_chart)
+        self.measurement_controller.measurement.relativeHumidityValueChanged.connect(self.update_dewpoint_chart)  
     def init_ui(self):
         self.setStyleSheet("background-color: #525c60;")
         main_layout = QVBoxLayout(self)
@@ -192,7 +192,7 @@ class MeasurementView(QWidget):
     @pyqtSlot()
     def update_pressure_chart(self):
         print("Update pressure chart")
-        pressure_values = self.measurement_controller.m_measurement.get_pressure_values()
+        pressure_values = self.measurement_controller.measurement.get_pressure_values()
         self.series_pressure.clear()
         for value in pressure_values:
             print("Update pressure chart", value)
@@ -206,7 +206,7 @@ class MeasurementView(QWidget):
     @pyqtSlot()
     def update_dewpoint_chart(self):
         print("Update dewpoint chart")
-        dewpoint_values = self.measurement_controller.m_measurement.get_relative_humidity_values()
+        dewpoint_values = self.measurement_controller.measurement.get_relative_humidity_values()
         self.series_dewpoint.clear()
         for value in dewpoint_values:
             print("Update dewpoint chart", value)

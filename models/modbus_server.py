@@ -11,13 +11,13 @@ class ModbusServer(QObject):
         self.modbus_client = None
         config = ConfigManager()
 
-        self.m_port = config.get_port()
-        self.m_baudRate = config.get_baud_rate()
-        self.m_parity = config.get_parity()
-        self.m_stopBits = config.get_stop_bits()
-        self.m_dataBits = config.get_data_bits()
-        self.m_timeout = config.get_timeout()
-        self.m_retries = config.get_retries()
+        self.port = config.get_port()
+        self.baudRate = config.get_baud_rate()
+        self.parity = config.get_parity()
+        self.stop_bits = config.get_stop_bits()
+        self.data_bits = config.get_data_bits()
+        self.timeout = config.get_timeout()
+        self.retries = config.get_retries()
         
 
     def __del__(self):
@@ -31,11 +31,11 @@ class ModbusServer(QObject):
             self.modbus_client = ModbusClient(
                 #method='rtu',
                 port=port,
-                baudrate=self.m_baudRate,
-                parity=self.m_parity,
-                stopbits=self.m_stopBits,
-                bytesize=self.m_dataBits,
-                timeout=self.m_timeout
+                baudrate=self.baudRate,
+                parity=self.parity,
+                stopbits=self.stop_bits,
+                bytesize=self.data_bits,
+                timeout=self.timeout
             )
 
         if not self.modbus_client.connect():

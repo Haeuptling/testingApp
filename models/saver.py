@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-class JsonHandler(QObject):
+class Saver(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
