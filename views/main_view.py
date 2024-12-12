@@ -46,25 +46,25 @@ class MainView(QMainWindow):
         """
 
         home_button = QPushButton("Home")
-        home_button.setFont(QFont("", 18))
+        home_button.setFont(QFont("", 26))
         home_button.setStyleSheet(button_style)
         home_button.clicked.connect(lambda: self.view_changed.emit("HomeView"))
         menu_layout.addWidget(home_button)
 
         measurement_button = QPushButton("Measurement")
-        measurement_button.setFont(QFont("", 18))
+        measurement_button.setFont(QFont("", 26))
         measurement_button.setStyleSheet(button_style)
         measurement_button.clicked.connect(lambda: self.view_changed.emit("MeasurementView"))
         menu_layout.addWidget(measurement_button)
 
         export_button = QPushButton("Export")
-        export_button.setFont(QFont("", 18))
+        export_button.setFont(QFont("", 26))
         export_button.setStyleSheet(button_style)
         export_button.clicked.connect(lambda: self.view_changed.emit("ExportView"))
         menu_layout.addWidget(export_button)
 
         settings_button = QPushButton("Settings")
-        settings_button.setFont(QFont("", 18))
+        settings_button.setFont(QFont("", 26))
         settings_button.setStyleSheet(button_style)
         settings_button.clicked.connect(lambda: self.view_changed.emit("SettingsView"))
         menu_layout.addWidget(settings_button)

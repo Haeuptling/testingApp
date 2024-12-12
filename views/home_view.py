@@ -40,14 +40,14 @@ class HomeView(QWidget):
 
         start_overpressure_measurement = QPushButton("Start \nOverpressure \nMeasurement")
         start_overpressure_measurement.setFixedSize(200, 130)
-        start_overpressure_measurement.setFont(QFont("", 18))
+        start_overpressure_measurement.setFont(QFont("", 26))
         start_overpressure_measurement.setStyleSheet(button_style)
         start_overpressure_measurement.clicked.connect(self.start_overpressure_measurement_clicked)
         button_row.addWidget(start_overpressure_measurement)
 
         start_overpressure_selftest = QPushButton("Start \nOverpressure \nSelftest")
         start_overpressure_selftest.setFixedSize(200, 130)
-        start_overpressure_selftest.setFont(QFont("", 18))
+        start_overpressure_selftest.setFont(QFont("", 26))
         start_overpressure_selftest.setStyleSheet(button_style)
         start_overpressure_selftest.clicked.connect(self.start_overpressure_selftest_clicked)
         button_row.addWidget(start_overpressure_selftest)
@@ -56,11 +56,12 @@ class HomeView(QWidget):
         main_layout.setAlignment(button_row, Qt.AlignTop | Qt.AlignHCenter)
 
         # Logo
-        base_path = os.path.dirname(os.path.abspath(__file__))
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
         logo_path = os.path.join(base_path, "images/Q_logo.png")
         logo_label = QLabel(self)
         pixmap = QPixmap(logo_path)
         if pixmap.isNull():
+            print(logo_path)
             print("Logo file not found or path is incorrect")
         else:
             logo_label.setPixmap(pixmap)
@@ -94,18 +95,18 @@ class HomeView(QWidget):
 
         layout = QVBoxLayout()
         label = QLabel("No overpressure property test \n was performed in this session")
-        label.setFont(QFont("", 18))  
+        label.setFont(QFont("", 26))  
         label.setStyleSheet("color: white;")
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
 
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.button(QDialogButtonBox.Ok).setText("Continue")
-        button_box.button(QDialogButtonBox.Ok).setFont(QFont("", 18))
+        button_box.button(QDialogButtonBox.Ok).setFont(QFont("", 26))
         button_box.button(QDialogButtonBox.Ok).setStyleSheet("background-color: white; border-radius: 10px;")
         button_box.button(QDialogButtonBox.Ok).clicked.connect(lambda: self.continue_test(popup))
         button_box.button(QDialogButtonBox.Cancel).setText("Cancel")
-        button_box.button(QDialogButtonBox.Cancel).setFont(QFont("", 18))
+        button_box.button(QDialogButtonBox.Cancel).setFont(QFont("", 26))
         button_box.button(QDialogButtonBox.Cancel).setStyleSheet("background-color: white; border-radius: 10px;")
         button_box.button(QDialogButtonBox.Cancel).clicked.connect(popup.close)
         layout.addWidget(button_box)
