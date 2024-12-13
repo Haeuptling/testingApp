@@ -39,6 +39,9 @@ class MeasurementController(QObject):
         self.total_duration_pressure = config.get_total_duration_min() * self.timer.msMultiplier * self.timer.minMultiplier
         self.interval_time = config.get_interval_time_s() * self.timer.msMultiplier
 
+        self.port_pressure = config.get_port_pressure_emitter()
+        self.port_dewpoint = config.get_port_dewpoint_emitter()
+
         self.pressure_emitter_id = config.get_pressure_emitter_slave_id()
         self.pressure_emitter_start_adress = config.get_pressure_emitter_start_address()
         self.pressure_emitter_registers = config.get_pressure_emitter_registers()
@@ -73,20 +76,17 @@ class MeasurementController(QObject):
         return files
 
     def start_overpressure_measurement(self):
-        port = "/dev/ttyUSB0"
-        port_dewpoint = "/dev/ttyUSB1"
         if not self.get_is_measurement_running():
             self.set_is_measurement_running(True)
             self.timer.start_timer(self.total_duration_pressure, self.interval_time)
-            self.modus_server_worker_pressure.start_worker(port)
-            self.modus_server_worker_dewpoint.start_worker(port_dewpoint)
+            self.modus_server_worker_pressure.start_worker(self.port_pressure)
+            self.modus_server_worker_dewpoint.start_worker(self.port_dewpoint)
 
     def start_selftest_overpressure_measurement(self):
-        port = "/dev/ttyUSB0"
         if not self.get_is_measurement_running():
             self.set_is_measurement_running(True)
             self.timer.start_timer(self.total_duration_pressure, self.interval_time)
-            self.modus_server_worker_pressure.start_worker(port)
+            self.modus_server_worker_pressure.start_worker(self.port_pressure)
 
     def set_pressure_value(self, new_pressure_value):
         self.pressure_value = new_pressure_value
@@ -98,7 +98,6 @@ class MeasurementController(QObject):
         self.is_pressure_selftest_done = new_is_pressure_self_test_done
 
     def export_file_to_usb(self, source_file_path):
-        destination_directory = "path_to_usb_drive"  # Passen Sie diesen Pfad an
         return self.Saver.export_file_to_usb(self.saving_path + source_file_path)
 
     def update_settings(self):

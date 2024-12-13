@@ -58,7 +58,6 @@ class ModbusServer(QObject):
 
             if not result.isError():
                 print("Reading registers requested. --------------------------")
-                print(f"Register_start: {start_address}, Number_of_registers: {number_of_registers}, Slave_id: {slave_id}")
                 for i in range(number_of_registers):
                     register_values.append(result.getRegister(i))
 

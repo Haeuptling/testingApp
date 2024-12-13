@@ -15,14 +15,14 @@ class Guidance:
         ]
 
         self.preparation_overpressure_instruction_texts = [
-            "1. Connect the test system to the DUT",
-            "2. Open the shut-off valve of the test system",
-            "3. Check the pressure gauge until the test pressure is constantly reached",
-            "4. Close the shut-off valve of the test system",
-            "5. Disconnect the test system from the DUT",
-            "6. Connect the hoses of the DUT to the test system",
-            "7. Open the shut-off valve of the DUT",
-            "8. Slowly set the pressure regulator to the test pressure of 200 mbar"
+        "1. Close all shut-off valves",
+        "2. Set the three-way valve to overpressure",
+        "3. Set the pressure regulator to 0 mbar",
+        "4. Connect the pressure reducer to the nitrogen supply \n and the nitrogen inlet of the test system",
+        "5. Open the gas supply to the nitrogen supply",
+        "6. Slowly set the pressure reducer to the inlet pressure of 1 bar",
+        "7. Open the inlet valve of the test system",
+        "8. Slowly set the pressure regulator \n to the test pressure of 200 mbar"
         ]
 
         self.overpressure_images = [

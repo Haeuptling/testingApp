@@ -11,10 +11,6 @@
 def generate_decimal(input_number):
     """
     Diese Funktion generiert Dezimalzahlen basierend auf der Eingabe:
-    - Bei 0 gibt sie 1 zurück.
-    - Bei 1 gibt sie 0.1 zurück.
-    - Bei 2 gibt sie 0.01 zurück.
-    - Bei 3 gibt sie 0.001 zurück.
     :param input_number: Zahl zwischen 0 und 4
     :return: Generierte Dezimalzahl
     """

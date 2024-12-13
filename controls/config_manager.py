@@ -52,7 +52,8 @@ class ConfigManager(metaclass=SingletonMeta):
             'DataBits': '8',
             'Timeout': '2',
             'Retries': '3',
-            'Port': 'COM6',
+            'Port_pressure_emitter': '/dev/ttyUSB0',
+            'Port_dewpoint_emitter': '/dev/ttyUSB1',
             'PressureEmitterSlaveId': '70',
             'PressureEmitterStartAdress': '0',
             'PressureEmitterRegisters': '10',
@@ -62,6 +63,12 @@ class ConfigManager(metaclass=SingletonMeta):
         }
         with open(self.config_file, 'w') as configfile:
             self.config.write(configfile)
+        
+    def get_port_pressure_emitter(self):
+        return str(self.config['Modbus']['PortPressureEmitter'])
+    
+    def get_port_dewpoint_emitter(self):
+        return str(self.config['Modbus']['PortDewpointEmitter'])
 
     def get_total_duration_min(self):
         return int(self.config['Measurement']['TotalDurationMin'])

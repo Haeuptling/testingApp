@@ -21,6 +21,7 @@ class Measurement(QObject):
         return self.m_pressureValues
 
     def generate_pressure_values(self, elapsed_seconds, pressure_value):
+
         multpiplicator = pressure_value[3] 
         pressure = pressure_value[4] * self.pressure_unit_multiplicator(multpiplicator)
 
