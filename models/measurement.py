@@ -21,9 +21,12 @@ class Measurement(QObject):
         return self.m_pressureValues
 
     def generate_pressure_values(self, elapsed_seconds, pressure_value):
+        multpiplicator = pressure_value[3] 
+        pressure = pressure_value[4] * self.pressure_unit_multiplicator(multpiplicator)
+
         temp_val = QPointF()
         temp_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
-        temp_val.setY(pressure_value)
+        temp_val.setY(pressure)
         self.m_pressureValues.append(temp_val)
         self.pressureValueChanged.emit()
 
@@ -48,7 +51,6 @@ class Measurement(QObject):
         return percentage_difference <= self.maximum_relative_humidity_difference_in_percent
 
     def evaluate_pressure(self):
-
         if(len(self.m_pressureValues) == 0):
             return False
         
@@ -64,19 +66,16 @@ class Measurement(QObject):
         diff = ((max_value - min_value) / max_value) * 100.0
         return int(round(diff))
 
-    def pressure_unit_multiplicator(self, register_value):
-        if register_value == 1:  # kPa
-            return 1
-        elif register_value == 2:  # MPa
-            return 10
-        elif register_value == 3:  # Bar
-            return 1
-        elif register_value == 4:  # Psi
-            return 1
-        elif register_value == 5:  # Pa
-            return 1
-        else:
-            return 1
+    """
+    Generierung von Dezimalzahlen basierend auf der Eingabe:
+    :param input_number: Zahl zwischen 0 und 4
+    :return: Generierte Dezimalzahl
+    """
+    def pressure_unit_multiplicator(input_number):
+        if not (0 <= input_number <= 4):
+            raise ValueError("Die Eingabe muss zwischen 0 und 4 liegen.")
+
+        return 10 ** -input_number
 
     def set_maximum_pressure_difference_in_percent(self, new_maximum_pressure_difference_in_percent):
         self.maximum_pressure_difference_in_percent = new_maximum_pressure_difference_in_percent

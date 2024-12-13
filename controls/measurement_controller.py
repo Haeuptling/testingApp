@@ -174,7 +174,7 @@ class MeasurementController(QObject):
     def set_register_value(self, register_values):
         print(f"Received register values: {register_values}")
         if register_values[0] == self.pressure_emitter_id:
-            self.set_pressure_value(register_values[4])
+            self.set_pressure_value(register_values)
             print(f"setPressureRegister {register_values[4]}")
         else:
             registers = [register_values[0], register_values[1]]
