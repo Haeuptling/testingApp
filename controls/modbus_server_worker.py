@@ -4,7 +4,8 @@ from models.modbus_server import ModbusServer
 class ModbusServerWorker(QThread):
     startModbus = pyqtSignal(str)
     readRegistersSignal = pyqtSignal(int, int, int)
-    readRegistersAnswerSignal = pyqtSignal(list)
+    readRegistersPressureAnswerSignal = pyqtSignal(list)
+    readRegistersDewpointAnswerSignal = pyqtSignal(list)
 
     def __init__(self, parent=None, controller=None):
         super().__init__(parent)
@@ -19,6 +20,7 @@ class ModbusServerWorker(QThread):
         self.startModbus.connect(self.modbus_server.connect_modbus)
         self.readRegistersSignal.connect(self.modbus_server.handle_read_registers)
         self.modbus_server.serverRegisterAnswer.connect(self.read_registers_answer_slot)
+        # self.modbus_server.serverRegisterAnswer.connect(self.read_registers_answer_slot)
         self.exec_()
 
     def start_worker(self, port):
@@ -45,7 +47,12 @@ class ModbusServerWorker(QThread):
     @pyqtSlot(int, int, int)
     def emit_read_registers(self, start_address, registers, slave_id):
         print("emit read registers")
+        print(f"start_address: {start_address}, registers: {registers}, slave_id: {slave_id}")
         self.readRegistersSignal.emit(start_address, registers, slave_id)
 
     def read_registers_answer_slot(self, pressure_registers):
-        self.readRegistersAnswerSignal.emit(pressure_registers)
+        print("modbus server worker read_registers_answer_slot")
+        if(pressure_registers[0] == 70):
+            self.readRegistersPressureAnswerSignal.emit(pressure_registers)
+        else:
+            self.readRegistersDewpointAnswerSignal.emit(pressure_registers)

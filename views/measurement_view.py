@@ -191,11 +191,9 @@ class MeasurementView(QWidget):
 
     @pyqtSlot()
     def update_pressure_chart(self):
-        print("Update pressure chart")
         pressure_values = self.measurement_controller.measurement.get_pressure_values()
         self.series_pressure.clear()
         for value in pressure_values:
-            print("Update pressure chart", value)
             self.series_pressure.append(value)
             if value.x() >= self.axis_x_pressure.max() - 1:
                 self.axis_x_pressure.setMax(self.axis_x_pressure.max() + 5)
@@ -205,11 +203,9 @@ class MeasurementView(QWidget):
 
     @pyqtSlot()
     def update_dewpoint_chart(self):
-        print("Update dewpoint chart")
         dewpoint_values = self.measurement_controller.measurement.get_relative_humidity_values()
         self.series_dewpoint.clear()
         for value in dewpoint_values:
-            print("Update dewpoint chart", value)
             self.series_dewpoint.append(value)
             self.current_dewpoint_label.setText(f"Current Dewpoint: {value.y()} %")
             if value.x() >= self.axis_x_dewpoint.max() - 1:

@@ -11,7 +11,7 @@ class ModbusServer(QObject):
         self.modbus_client = None
         config = ConfigManager()
 
-        self.port = config.get_port()
+        #self.port = config.get_port()
         self.baudRate = config.get_baud_rate()
         self.parity = config.get_parity()
         self.stop_bits = config.get_stop_bits()
@@ -29,7 +29,7 @@ class ModbusServer(QObject):
 
         if not self.modbus_client:
             self.modbus_client = ModbusClient(
-                #method='rtu',
+                method='rtu',
                 port=port,
                 baudrate=self.baudRate,
                 parity=self.parity,
@@ -58,6 +58,7 @@ class ModbusServer(QObject):
 
             if not result.isError():
                 print("Reading registers requested. --------------------------")
+                print(f"Register_start: {start_address}, Number_of_registers: {number_of_registers}, Slave_id: {slave_id}")
                 for i in range(number_of_registers):
                     register_values.append(result.getRegister(i))
 
