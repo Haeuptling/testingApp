@@ -256,6 +256,6 @@ class MeasurementController(QObject):
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
         elif self.current_operation == Operations.PRESSURE_TEST:
             self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-            self.modus_server_worker_dewpoint.read_registers(2000, 2, self.dewpoint_emitter_id)
+            self.modus_server_worker_dewpoint.read_registers(2301, 2, self.dewpoint_emitter_id)
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
             self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)
