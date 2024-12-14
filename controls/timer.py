@@ -1,8 +1,8 @@
 from PyQt5.QtCore import QObject, QTimer, QElapsedTimer, pyqtSignal
 
 class Timer(QObject):
-    intervalElapsed = pyqtSignal(int)
-    timerFinished = pyqtSignal()
+    interval_elapsed = pyqtSignal(int)
+    timer_finished = pyqtSignal()
 
     msMultiplier = 1000
     minMultiplier = 60
@@ -25,10 +25,10 @@ class Timer(QObject):
 
     def on_interval(self):
         elapsed_ms = self.elapsed_timer.elapsed()
-        self.intervalElapsed.emit(elapsed_ms)
+        self.interval_elapsed.emit(elapsed_ms)
         print(f"Interval elapsed: {elapsed_ms} ms.")
 
         if elapsed_ms >= self.total_duration:
             self.interval_timer.stop()
-            self.timerFinished.emit()
+            self.timer_finished.emit()
             print("Timer finished.")

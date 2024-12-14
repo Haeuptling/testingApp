@@ -16,15 +16,15 @@ from views.main_view import MainView
 from views.home_view import HomeView
 
 class MeasurementController(QObject):
-    intervalElapsed = pyqtSignal()
+    interval_elapsed = pyqtSignal()
     timerFinished = pyqtSignal()
     measurement_successfully_completed = pyqtSignal()
     measurement_not_successfully_completed = pyqtSignal()
 
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
-        self.modus_server_worker_pressure = ModbusServerWorker()
-        self.modus_server_worker_dewpoint = ModbusServerWorker()
+        self.modbus_server_worker_pressure = ModbusServerWorker()
+        self.modbus_server_worker_dewpoint = ModbusServerWorker()
         self.timer = Timer()
         self.guidance = Guidance()
         self.Saver = Saver()
@@ -50,10 +50,10 @@ class MeasurementController(QObject):
         self.dewpoint_emitter_Start_adress = config.get_dewpoint_emitter_start_address()
         self.dewpoint_emitter_registers = config.get_dewpoint_emitter_registers()
 
-        self.timer.intervalElapsed.connect(self.on_interval)
-        self.modus_server_worker_pressure.readRegistersPressureAnswerSignal.connect(self.set_register_value)
-        self.modus_server_worker_dewpoint.readRegistersDewpointAnswerSignal.connect(self.set_register_value)
-        self.timer.timerFinished.connect(self.on_timeout)
+        self.timer.interval_elapsed .connect(self.on_interval)
+        self.modbus_server_worker_pressure.readRegistersPressureAnswerSignal.connect(self.set_register_value)
+        self.modbus_server_worker_dewpoint.readRegistersDewpointAnswerSignal.connect(self.set_register_value)
+        self.timer.timer_finished.connect(self.on_timeout)
 
         self.saving_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         print(f"Saving path: {self.saving_path}")
@@ -79,14 +79,14 @@ class MeasurementController(QObject):
         if not self.get_is_measurement_running():
             self.set_is_measurement_running(True)
             self.timer.start_timer(self.total_duration_pressure, self.interval_time)
-            self.modus_server_worker_pressure.start_worker(self.port_pressure)
-            self.modus_server_worker_dewpoint.start_worker(self.port_dewpoint)
+            self.modbus_server_worker_pressure.start_worker(self.port_pressure)
+            self.modbus_server_worker_dewpoint.start_worker(self.port_dewpoint)
 
     def start_selftest_overpressure_measurement(self):
         if not self.get_is_measurement_running():
             self.set_is_measurement_running(True)
             self.timer.start_timer(self.total_duration_pressure, self.interval_time)
-            self.modus_server_worker_pressure.start_worker(self.port_pressure)
+            self.modbus_server_worker_pressure.start_worker(self.port_pressure)
 
     def set_pressure_value(self, new_pressure_value):
         self.pressure_value = new_pressure_value
@@ -166,10 +166,10 @@ class MeasurementController(QObject):
         self.measurement.delete_relative_humidity_values()
 
         if(self.current_operation == Operations.PRESSURE_SELF_TEST):
-            self.modus_server_worker_pressure.stop_worker()
+            self.modbus_server_worker_pressure.stop_worker()
         elif(self.current_operation == Operations.PRESSURE_TEST):
-            self.modus_server_worker_pressure.stop_worker()
-            self.modus_server_worker_dewpoint.stop_worker()
+            self.modbus_server_worker_pressure.stop_worker()
+            self.modbus_server_worker_dewpoint.stop_worker()
 
         self.set_current_operation(Operations.NONE)
         self.set_is_measurement_running(False)
@@ -207,7 +207,7 @@ class MeasurementController(QObject):
         current_time = self.get_current_date_time()
         screenshot_path = os.path.join(self.saving_path, 'saves', f"{current_time}.png")
         pdf_path = os.path.join(self.saving_path, 'saves', f"{current_time}_{Operations.toString(self.current_operation)}.pdf")
-        text = f"Measurement: {Operations.toString(self.current_operation)} successful: {result} \n"
+        # text = f"Measurement: {Operations.toString(self.current_operation)} successful: {result} \newline Time : {current_time}"
 
         if self.Saver.take_screenshot(screenshot_path, self.main_window):
             os.remove(screenshot_path)  # Entfernen der temporären Bilddatei
@@ -220,7 +220,7 @@ class MeasurementController(QObject):
         else:
             self.measurement_not_successfully_completed.emit()
         self.set_is_measurement_running(False)
-        self.Saver.save_screenshot_to_pdf("measurement_chart.png", "measurement_chart_2.png", pdf_path, text)
+        self.Saver.save_screenshot_to_pdf("measurement_chart.png", "measurement_chart_2.png", pdf_path, Operations.toString(self.current_operation), result, current_time)
 
     # def load_data(self):
     #     self.view_changed.emit("ExportView")
@@ -262,11 +262,11 @@ class MeasurementController(QObject):
     #     elapsed_seconds = elapsed_ms // 100
     #     print("-----------------------------------------")
     #     if self.current_operation == Operations.PRESSURE_SELF_TEST:
-    #         # self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+    #         # self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
     #         self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
     #     elif self.current_operation == Operations.PRESSURE_TEST:
-    #         self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-    #         self.modus_server_worker_dewpoint.read_registers(2301, 2, self.dewpoint_emitter_id)
+    #         self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+    #         self.modbus_server_worker_dewpoint.read_registers(2301, 2, self.dewpoint_emitter_id)
     #         self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
     #         self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)
 
@@ -274,10 +274,10 @@ class MeasurementController(QObject):
         elapsed_seconds = elapsed_ms // Timer.msMultiplier
         print("-----------------------------------------")
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
-            self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+            self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
         elif self.current_operation == Operations.PRESSURE_TEST:
-            self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-            self.modus_server_worker_dewpoint.read_registers(self.dewpoint_emitter_Start_adress, self.dewpoint_emitter_registers, self.dewpoint_emitter_id)
+            self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+            self.modbus_server_worker_dewpoint.read_registers(self.dewpoint_emitter_Start_adress, self.dewpoint_emitter_registers, self.dewpoint_emitter_id)
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
             self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)

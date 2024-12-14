@@ -2,8 +2,8 @@ from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot, QMetaObject, Qt
 from models.modbus_server import ModbusServer
 
 class ModbusServerWorker(QThread):
-    startModbus = pyqtSignal(str)
-    readRegistersSignal = pyqtSignal(int, int, int)
+    start_modbus = pyqtSignal(str)
+    read_registers_signal = pyqtSignal(int, int, int)
     readRegistersPressureAnswerSignal = pyqtSignal(list)
     readRegistersDewpointAnswerSignal = pyqtSignal(list)
 
@@ -17,8 +17,8 @@ class ModbusServerWorker(QThread):
 
     def run_worker(self):
         self.modbus_server = ModbusServer()
-        self.startModbus.connect(self.modbus_server.connect_modbus)
-        self.readRegistersSignal.connect(self.modbus_server.handle_read_registers)
+        self.start_modbus.connect(self.modbus_server.connect_modbus)
+        self.read_registers_signal.connect(self.modbus_server.handle_read_registers)
         self.modbus_server.serverRegisterAnswer.connect(self.read_registers_answer_slot)
         # self.modbus_server.serverRegisterAnswer.connect(self.read_registers_answer_slot)
         self.exec_()
@@ -31,7 +31,7 @@ class ModbusServerWorker(QThread):
 
     @pyqtSlot(str)
     def emit_start_modbus(self, port):
-        self.startModbus.emit(port)
+        self.start_modbus.emit(port)
 
     def stop_worker(self):
         if self.modbus_server:
@@ -48,7 +48,7 @@ class ModbusServerWorker(QThread):
     def emit_read_registers(self, start_address, registers, slave_id):
         print("emit read registers")
         print(f"start_address: {start_address}, registers: {registers}, slave_id: {slave_id}")
-        self.readRegistersSignal.emit(start_address, registers, slave_id)
+        self.read_registers_signal.emit(start_address, registers, slave_id)
 
     def read_registers_answer_slot(self, pressure_registers):
         print("modbus server worker read_registers_answer_slot")

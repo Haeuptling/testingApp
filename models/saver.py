@@ -9,6 +9,11 @@ from PyQt5.QtGui import QGuiApplication, QScreen
 from PyQt5.QtWidgets import QApplication
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph
+from reportlab.lib.enums import TA_CENTER
+
+from models.operations import Operations
 
 class Saver(QObject):
     def __init__(self, parent=None):
@@ -55,17 +60,34 @@ class Saver(QObject):
         
         return screenshot.save(save_path, "png")
 
-    def save_screenshot_to_pdf(self, image_path_1, image_path_2, pdf_path, text):
+    def save_screenshot_to_pdf(self, image_path_1, image_path_2, pdf_path, current_operation, result, current_time):
         # Create PDF
         pdf = canvas.Canvas(pdf_path, pagesize=letter)
         width, height = letter
 
-        # Add text to PDF
-        pdf.drawString(100, height - 100, text)
+        # Create a formatted text
+        print(current_operation)
+        formatted_text = f"<b>Measurement:</b> {Operations.toStringLowerCase(current_operation)}<br/>" \
+                         f"<b>Successful:</b> {result}<br/>" \
+                         f"<b>Time:</b> {current_time}"
 
-        # Add screenshot to PDF
-        pdf.drawImage(image_path_1, 100, height - 500, width=400, height=300)
-        pdf.drawImage(image_path_2, 100, height - 800, width=400, height=300)
+        # Add formatted text to PDF
+        styles = getSampleStyleSheet()
+        custom_style = ParagraphStyle(
+            'Custom',
+            parent=styles['Normal'],
+            fontSize=12,
+            leading=14,
+            alignment=TA_CENTER,
+            spaceAfter=10,
+        )
+        paragraph = Paragraph(formatted_text, custom_style)
+        paragraph.wrapOn(pdf, width - 200, height)
+        paragraph.drawOn(pdf, 100, height - 150)
+
+        # Add screenshots to PDF
+        pdf.drawImage(image_path_1, 100, height - 450, width=400, height=300)
+        pdf.drawImage(image_path_2, 100, height - 750, width=400, height=300)
 
         pdf.save()
         print(f"PDF saved: {pdf_path}")

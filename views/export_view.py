@@ -2,6 +2,7 @@ import os
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListView, QLabel, QPushButton, QDialog, QAbstractItemView
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QStringListModel
+from datetime import datetime
 from PyQt5.QtCore import pyqtSignal
 
 
@@ -72,8 +73,22 @@ class ExportView(QWidget):
         if not os.path.exists(save_directory):
             os.makedirs(save_directory)
         files = os.listdir(save_directory)
+
+        # Sort files by date in descending order
+        files.sort(key=lambda x: self.extract_date_from_filename(x), reverse=True)
+
         model = QStringListModel(files)
         self.set_model(model)
+
+    def extract_date_from_filename(self, filename):
+        # Remove the file extension
+        filename_without_extension = os.path.splitext(filename)[0]
+        # Extract the date and time part from the filename
+        parts = filename_without_extension.split('_')
+        date_str = parts[0]
+        time_str = parts[1]
+        datetime_str = f"{date_str} {time_str}"
+        return datetime.strptime(datetime_str, "%d.%m.%Y %H.%M.%S")
 
     def set_model(self, model):
         self.file_list_view.setModel(model)
