@@ -55,7 +55,7 @@ class Saver(QObject):
         
         return screenshot.save(save_path, "png")
 
-    def save_screenshot_to_pdf(self, image_path, pdf_path, text):
+    def save_screenshot_to_pdf(self, image_path_1, image_path_2, pdf_path, text):
         # Create PDF
         pdf = canvas.Canvas(pdf_path, pagesize=letter)
         width, height = letter
@@ -64,7 +64,8 @@ class Saver(QObject):
         pdf.drawString(100, height - 100, text)
 
         # Add screenshot to PDF
-        pdf.drawImage(image_path, 100, height - 500, width=400, height=400)
+        pdf.drawImage(image_path_1, 100, height - 500, width=400, height=300)
+        pdf.drawImage(image_path_2, 100, height - 800, width=400, height=300)
 
         pdf.save()
         print(f"PDF saved: {pdf_path}")

@@ -60,7 +60,7 @@ class MainView(QMainWindow):
         export_button = QPushButton("Export")
         export_button.setFont(QFont("", 26))
         export_button.setStyleSheet(button_style)
-        export_button.clicked.connect(lambda: self.view_changed.emit("ExportView"))
+        export_button.clicked.connect(lambda: self.view_changed.emit("ExportView"))#self.measurement_controller.load_data()
         menu_layout.addWidget(export_button)
 
         settings_button = QPushButton("Settings")
@@ -77,7 +77,7 @@ class MainView(QMainWindow):
 
         self.setCentralWidget(central_widget)
 
-        # Erzeuge und füge die verschiedenen Views hinzu
+        # Add views
         self.home_view = HomeView(measurement_controller=self.measurement_controller, main_view=self)
         self.add_view(self.home_view, "HomeView")
 
@@ -93,7 +93,7 @@ class MainView(QMainWindow):
         self.settings_view = SettingsView(measurement_controller=self.measurement_controller, main_view=self)
         self.add_view(self.settings_view, "SettingsView")
 
-        # Verbinde das Signal zum Wechseln der Ansicht mit dem Slot
+        # Signal ViewChanged 
         self.view_changed.connect(self.set_content_view)
 
     def set_content_view(self, view_name):

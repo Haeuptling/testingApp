@@ -15,7 +15,7 @@ class ModbusServerWorker(QThread):
     def __del__(self):
         self.stop_worker()
 
-    def run(self):
+    def run_worker(self):
         self.modbus_server = ModbusServer()
         self.startModbus.connect(self.modbus_server.connect_modbus)
         self.readRegistersSignal.connect(self.modbus_server.handle_read_registers)

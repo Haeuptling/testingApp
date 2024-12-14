@@ -161,10 +161,17 @@ class MeasurementController(QObject):
         return count
 
     def abort_measurement(self):
-        self.set_current_operation(Operations.NONE)
+        self.timer.stop_timer()
         self.measurement.delete_pressure_values()
         self.measurement.delete_relative_humidity_values()
-        self.timer.stop_timer()
+
+        if(self.current_operation == Operations.PRESSURE_SELF_TEST):
+            self.modus_server_worker_pressure.stop_worker()
+        elif(self.current_operation == Operations.PRESSURE_TEST):
+            self.modus_server_worker_pressure.stop_worker()
+            self.modus_server_worker_dewpoint.stop_worker()
+
+        self.set_current_operation(Operations.NONE)
         self.set_is_measurement_running(False)
 
     def set_relative_humidity_value(self, new_relative_humidity_value):
@@ -203,7 +210,6 @@ class MeasurementController(QObject):
         text = f"Measurement: {Operations.toString(self.current_operation)} successful: {result} \n"
 
         if self.Saver.take_screenshot(screenshot_path, self.main_window):
-            self.Saver.save_screenshot_to_pdf(screenshot_path, pdf_path, text)
             os.remove(screenshot_path)  # Entfernen der temporären Bilddatei
         else:
             print("Failed to take screenshot")
@@ -214,6 +220,11 @@ class MeasurementController(QObject):
         else:
             self.measurement_not_successfully_completed.emit()
         self.set_is_measurement_running(False)
+        self.Saver.save_screenshot_to_pdf("measurement_chart.png", "measurement_chart_2.png", pdf_path, text)
+
+    # def load_data(self):
+    #     self.view_changed.emit("ExportView")
+
 
     def interpret_registers_as_float(self, registers):
         if len(registers) == 2:
@@ -247,14 +258,26 @@ class MeasurementController(QObject):
             print(f"Error writing to JSON: {path}, {e}")
             return False
 
+    # def on_interval(self, elapsed_ms):
+    #     elapsed_seconds = elapsed_ms // 100
+    #     print("-----------------------------------------")
+    #     if self.current_operation == Operations.PRESSURE_SELF_TEST:
+    #         # self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+    #         self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
+    #     elif self.current_operation == Operations.PRESSURE_TEST:
+    #         self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+    #         self.modus_server_worker_dewpoint.read_registers(2301, 2, self.dewpoint_emitter_id)
+    #         self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
+    #         self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)
+
     def on_interval(self, elapsed_ms):
-        elapsed_seconds = elapsed_ms // 100
+        elapsed_seconds = elapsed_ms // Timer.msMultiplier
         print("-----------------------------------------")
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
             self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
         elif self.current_operation == Operations.PRESSURE_TEST:
             self.modus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-            self.modus_server_worker_dewpoint.read_registers(2301, 2, self.dewpoint_emitter_id)
+            self.modus_server_worker_dewpoint.read_registers(self.dewpoint_emitter_Start_adress, self.dewpoint_emitter_registers, self.dewpoint_emitter_id)
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
             self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)

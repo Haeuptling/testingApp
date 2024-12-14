@@ -2,15 +2,20 @@ import os
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListView, QLabel, QPushButton, QDialog, QAbstractItemView
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QStringListModel
-
+from PyQt5.QtCore import pyqtSignal
 
 
 class ExportView(QWidget):
+    view_changed = pyqtSignal(str)
     def __init__(self, measurement_controller):
         super().__init__()
         self.measurement_controller = measurement_controller
         self.init_ui()
         self.load_files()
+
+    def on_export_button_clicked(self):
+        self.load_files()
+        self.view_changed.emit("ExportView")
 
     def init_ui(self):
         self.setStyleSheet("background-color: #31373A;")

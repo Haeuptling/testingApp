@@ -89,13 +89,13 @@ class HomeView(QWidget):
     def show_self_test_popup(self):
         popup = QDialog(self)
         popup.setModal(True)
-        popup.setFixedSize(450, 200)
+        popup.setFixedSize(550, 200)
         popup.setWindowTitle("Self Test Required")
         popup.setStyleSheet("background-color: #525c60;")
 
         layout = QVBoxLayout()
         label = QLabel("No overpressure property test \n was performed in this session")
-        label.setFont(QFont("", 26))  
+        label.setFont(QFont("", 22))  
         label.setStyleSheet("color: white;")
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
