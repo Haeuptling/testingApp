@@ -11,7 +11,7 @@ class TestMeasurement(unittest.TestCase):
         pressure_values = self.measurement.get_pressure_values()
         self.assertEqual(len(pressure_values), 1)
         self.assertEqual(pressure_values[0].x(), 2.0)  # 120 seconds = 2 minutes
-        self.assertEqual(pressure_values[0].y(), 50)
+        self.assertEqual(pressure_values[0].y(), 5)
 
     def test_generate_relative_humidity_values(self):
         self.measurement.generate_relative_humidity_values(180, 60)

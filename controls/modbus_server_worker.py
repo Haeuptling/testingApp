@@ -13,7 +13,8 @@ class ModbusServerWorker(QThread):
         self.measurement_controller = controller
 
     def __del__(self):
-        self.stop_worker()
+        if self.isRunning():
+            self.stop_worker()
 
     def run_worker(self):
         self.modbus_server = ModbusServer()
@@ -32,9 +33,11 @@ class ModbusServerWorker(QThread):
     @pyqtSlot(str)
     def emit_start_modbus(self, port):
         self.start_modbus.emit(port)
-
+        
     def stop_worker(self):
         if self.modbus_server:
+            self.quit()
+            self.wait()
             self.modbus_server.deleteLater()
             self.modbus_server = None
 

@@ -60,7 +60,7 @@ class MainView(QMainWindow):
         export_button = QPushButton("Export")
         export_button.setFont(QFont("", 26))
         export_button.setStyleSheet(button_style)
-        export_button.clicked.connect(lambda: self.view_changed.emit("ExportView"))#self.measurement_controller.load_data()
+        export_button.clicked.connect(self.show_export_view)#self.measurement_controller.load_data()
         menu_layout.addWidget(export_button)
 
         settings_button = QPushButton("Settings")
@@ -95,6 +95,10 @@ class MainView(QMainWindow):
 
         # Signal ViewChanged 
         self.view_changed.connect(self.set_content_view)
+        
+    def show_export_view(self):
+        self.export_view.load_files()
+        self.view_changed.emit("ExportView")
 
     def set_content_view(self, view_name):
         for i in range(self.content_view.count()):

@@ -159,19 +159,20 @@ class MeasurementView(QWidget):
         popup.close()
         self.main_view.view_changed.emit("HomeView")
 
-    def save_chart_image(self, diagram_name):
+    def save_chart_image(self):
         if self.show_first_chart:
             pixmap = self.chart_view_pressure.grab()
+            pixmap.save("pressure_chart.png")
         else:
             pixmap = self.chart_view_dewpoint.grab()
-        pixmap.save(diagram_name)
+            pixmap.save("dewpoint_chart.png")
 
     @pyqtSlot()
     def on_measurement_successfully_completed(self):
         self.successfully_completed = True
-        self.save_chart_image("measurement_chart.png")
+        self.save_chart_image()
         self.switch_chart()
-        self.save_chart_image("measurement_chart_2.png")
+        self.save_chart_image()
         self.show_completion_popup()
 
     @pyqtSlot()

@@ -15,9 +15,9 @@ class Operations(Enum):
             return "NONE"
     @staticmethod   
     def toStringLowerCase(operation):
-        if operation == "PRESSURE_SELF_TEST":
+        if operation == Operations.PRESSURE_SELF_TEST:
             return "Pressure Self Test"
-        elif operation =="PRESSURE_TEST":
+        elif operation == Operations.PRESSURE_TEST:
             return  "Pressure Test"
         else:
             return "NONE"

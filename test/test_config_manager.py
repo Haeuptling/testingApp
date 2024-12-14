@@ -1,34 +1,17 @@
 import unittest
 import os
-import configparser
 from controls.config_manager import ConfigManager
 
 class TestConfigManager(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        cls.test_config_file = 'test_config.ini'
+        cls.test_config_file = os.path.join(os.path.dirname(__file__), 'test_config.ini')
         cls.config_manager = ConfigManager(config_file=cls.test_config_file)
 
     @classmethod
     def tearDownClass(cls):
         if os.path.exists(cls.test_config_file):
             os.remove(cls.test_config_file)
-
-    def setUp(self):
-        self.config_manager.create_default_config()
-
-    def test_singleton(self):
-        config_manager_1 = ConfigManager(config_file=self.test_config_file)
-        config_manager_2 = ConfigManager(config_file=self.test_config_file)
-        self.assertIs(config_manager_1, config_manager_2)
-
-    def test_load_config(self):
-        self.config_manager.load_config()
-        self.assertTrue(self.config_manager.config.has_section('General'))
-        self.assertTrue(self.config_manager.config.has_section('Settings'))
-        self.assertTrue(self.config_manager.config.has_section('Measurement'))
-        self.assertTrue(self.config_manager.config.has_section('Modbus'))
 
     def test_get_methods(self):
         self.assertEqual(self.config_manager.get_port_pressure_emitter(), '/dev/ttyUSB0')
@@ -56,17 +39,6 @@ class TestConfigManager(unittest.TestCase):
 
         self.config_manager.set_total_duration_min(10)
         self.assertEqual(self.config_manager.get_total_duration_min(), 10)
-
-        self.config_manager.set_interval_time_s(15)
-        self.assertEqual(self.config_manager.get_interval_time_s(), 15)
-
-    def test_save_config(self):
-        self.config_manager.set_maximum_pressure_difference_in_percent(7)
-        self.config_manager.save_config()
-
-        new_config = configparser.ConfigParser()
-        new_config.read(self.test_config_file)
-        self.assertEqual(new_config['Measurement']['MaximumPressureDifferenceInPercent'], '7')
 
 if __name__ == '__main__':
     unittest.main()

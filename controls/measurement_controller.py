@@ -220,7 +220,7 @@ class MeasurementController(QObject):
         else:
             self.measurement_not_successfully_completed.emit()
         self.set_is_measurement_running(False)
-        self.Saver.save_screenshot_to_pdf("measurement_chart.png", "measurement_chart_2.png", pdf_path, Operations.toString(self.current_operation), result, current_time)
+        self.Saver.save_screenshot_to_pdf(pdf_path, self.current_operation, result, current_time)
 
     # def load_data(self):
     #     self.view_changed.emit("ExportView")

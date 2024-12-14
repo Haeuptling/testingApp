@@ -60,7 +60,7 @@ class Saver(QObject):
         
         return screenshot.save(save_path, "png")
 
-    def save_screenshot_to_pdf(self, image_path_1, image_path_2, pdf_path, current_operation, result, current_time):
+    def save_screenshot_to_pdf(self, pdf_path, current_operation, result, current_time):
         # Create PDF
         pdf = canvas.Canvas(pdf_path, pagesize=letter)
         width, height = letter
@@ -69,7 +69,7 @@ class Saver(QObject):
         print(current_operation)
         formatted_text = f"<b>Measurement:</b> {Operations.toStringLowerCase(current_operation)}<br/>" \
                          f"<b>Successful:</b> {result}<br/>" \
-                         f"<b>Time:</b> {current_time}"
+                         f"<b>Date:</b> {current_time}"
 
         # Add formatted text to PDF
         styles = getSampleStyleSheet()
@@ -86,8 +86,11 @@ class Saver(QObject):
         paragraph.drawOn(pdf, 100, height - 150)
 
         # Add screenshots to PDF
-        pdf.drawImage(image_path_1, 100, height - 450, width=400, height=300)
-        pdf.drawImage(image_path_2, 100, height - 750, width=400, height=300)
+        if(current_operation == Operations.PRESSURE_SELF_TEST):
+            pdf.drawImage("pressure_chart.png", 100, height - 450, width=400, height=300)
+        elif(current_operation == Operations.PRESSURE_TEST):
+            pdf.drawImage("pressure_chart.png", 100, height - 450, width=400, height=300)
+            pdf.drawImage("dewpoint_chart.png", 100, height - 750, width=400, height=300)
 
         pdf.save()
         print(f"PDF saved: {pdf_path}")
