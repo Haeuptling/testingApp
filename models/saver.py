@@ -4,7 +4,7 @@ import json
 import shutil
 from PyQt5.QtCore import QObject, QPointF
 from PyQt5.QtCore import QDir, QFile, QIODevice
-from PyQt5.QtCore import QJsonDocument # QJsonObject, QJsonArray
+from PyQt5.QtCore import QJsonDocument 
 from PyQt5.QtGui import QGuiApplication, QScreen
 from PyQt5.QtWidgets import QApplication
 from reportlab.lib.pagesizes import letter
@@ -95,6 +95,13 @@ class Saver(QObject):
         pdf.save()
         print(f"PDF saved: {pdf_path}")
 
+
+    """
+    Exportiert eine Datei auf einen USB-Stick.
+    
+    :param source_file_path: Der Pfad zur Quelldatei.
+    :return: True, wenn der Export erfolgreich war, sonst False.
+    """
     def export_file_to_usb(self, source_file_path):
         usb_mount_path = ""
 

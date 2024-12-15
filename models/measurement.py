@@ -20,6 +20,11 @@ class Measurement(QObject):
     def get_pressure_values(self):
         return self.m_pressureValues
 
+    """
+    Generiert und speichert Druckwerte basierend auf der verstrichenen Zeit und dem Druckwert.
+    :param elapsed_seconds: Verstrichene Zeit in Sekunden
+    :param pressure_value: Druckwert
+    """
     def generate_pressure_values(self, elapsed_seconds, pressure_value):            
         # multpiplicator = pressure_value[3] 
         # pressure = pressure_value[4] * self.pressure_unit_multiplicator(multpiplicator)
@@ -34,6 +39,11 @@ class Measurement(QObject):
     def convert_seconds_to_minutes(self, seconds):
         return float(seconds) / 60.0
 
+    """
+    Generiert und speichert relative Feuchtigkeitswerte basierend auf der verstrichenen Zeit und dem Feuchtigkeitswert.
+    :param elapsed_seconds: Verstrichene Zeit in Sekunden
+    :param relative_humidity_value: Wert der relativen Feuchtigkeit
+    """
     def generate_relative_humidity_values(self, elapsed_seconds, relative_humidity_value):
         temp_val = QPointF()
         temp_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
@@ -42,6 +52,10 @@ class Measurement(QObject):
         print("Relative Humidity Value: ", relative_humidity_value)
         self.relativeHumidityValueChanged.emit()
 
+    """
+    Bewertet die relative Feuchtigkeit basierend auf den gespeicherten Werten.
+    :return: True, wenn die relative Feuchtigkeit innerhalb des maximalen Unterschieds liegt, sonst False
+    """
     def evaluate_relative_humidity(self):
 
         if(len(self.m_relativeHumidityValues) == 0):
@@ -51,6 +65,10 @@ class Measurement(QObject):
         percentage_difference = self.calculate_percentage_difference(min_max[0].y(), min_max[1].y())
         return percentage_difference <= self.maximum_relative_humidity_difference_in_percent
 
+    """
+    Bewertet den Druck basierend auf den gespeicherten Werten.
+    :return: True, wenn der Druck innerhalb des maximalen Unterschieds liegt, sonst False
+    """
     def evaluate_pressure(self):
         if(len(self.m_pressureValues) == 0):
             return False
@@ -60,6 +78,12 @@ class Measurement(QObject):
         result = percentage_difference <= self.maximum_pressure_difference_in_percent
         return result
 
+    """
+    Berechnet den prozentualen Unterschied zwischen zwei Werten.
+    :param min_value: Minimaler Wert
+    :param max_value: Maximaler Wert
+    :return: Prozentualer Unterschied
+    """
     def calculate_percentage_difference(self, min_value, max_value):
         if max_value == 0:
             print("Division by 0")
@@ -84,6 +108,12 @@ class Measurement(QObject):
     def set_maximum_humidity_difference_in_percent(self, new_maximum_humidity_difference_in_percent):
         self.maximum_relative_humidity_difference_in_percent = new_maximum_humidity_difference_in_percent
 
+
+    """
+    Findet die minimalen und maximalen Punkte in den Daten.
+    :param data: Liste der Datenpunkte
+    :return: Liste mit minimalem und maximalem Punkt
+    """
     def find_min_max(self, data):
         min_point = data[0]
         max_point = data[0]
