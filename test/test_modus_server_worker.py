@@ -1,5 +1,10 @@
 import unittest
 from PyQt5.QtCore import QCoreApplication, QThread, pyqtSignal, pyqtSlot, QMetaObject, Qt, Q_ARG
+
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from controls.modbus_server_worker import ModbusServerWorker
 from models.modbus_server import ModbusServer
 

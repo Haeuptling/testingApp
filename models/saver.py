@@ -98,31 +98,28 @@ class Saver(QObject):
     def export_file_to_usb(self, source_file_path):
         usb_mount_path = ""
 
-        # Erkennung von USB-Laufwerken unter Windows
+        # USB Windows
         if os.name == 'nt':
             for drive in range(ord('D'), ord('Z') + 1):
                 path = f"{chr(drive)}:/"
                 if os.path.exists(path):
                     usb_mount_path = path
                     break
-        # Erkennung von USB-Laufwerken unter Linux
+        # USB Raspberry
         elif os.name == 'posix':
-            media_dir = "/media"
+            media_dir = "/media/raspberry"
             if os.path.exists(media_dir):
                 devices = [d for d in os.listdir(media_dir) if os.path.isdir(os.path.join(media_dir, d))]
                 if devices:
                     usb_mount_path = os.path.join(media_dir, devices[0])
 
-        # Überprüfen, ob ein USB-Stick gefunden wurde
         if not usb_mount_path:
             print("No USB stick found")
             return False
 
-        # Pfad auf dem USB-Stick erstellen
         file_name = os.path.basename(source_file_path)
         destination_file_path = os.path.join(usb_mount_path, file_name)
 
-        # Daten kopieren
         if not os.path.exists(source_file_path):
             print(f"The source file does not exist: {source_file_path}")
             return False

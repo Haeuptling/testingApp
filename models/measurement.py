@@ -26,7 +26,7 @@ class Measurement(QObject):
 
         temp_val = QPointF()
         temp_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
-        temp_val.setY(5)
+        temp_val.setY(pressure_value)
         self.m_pressureValues.append(temp_val)
         self.pressureValueChanged.emit()
         print("")

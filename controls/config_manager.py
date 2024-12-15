@@ -34,7 +34,7 @@ class ConfigManager(metaclass=SingletonMeta):
             'CurrentFilePath': ''
         }
         self.config['Settings'] = {
-            'WindowWidth': '680',
+            'WindowWidth': '800',
             'WindowHeight': '480',
             'Fullscreen': 'true'
         }

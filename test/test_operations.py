@@ -1,4 +1,7 @@
 import unittest
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from models.operations import Operations
 
 class TestOperations(unittest.TestCase):
@@ -9,9 +12,9 @@ class TestOperations(unittest.TestCase):
         self.assertEqual(Operations.toString(Operations.PRESSURE_TEST), "PRESSURE_TEST")
 
     def test_toStringLowerCase(self):
-        self.assertEqual(Operations.toStringLowerCase("NONE"), "NONE")
-        self.assertEqual(Operations.toStringLowerCase("PRESSURE_SELF_TEST"), "Pressure Self Test")
-        self.assertEqual(Operations.toStringLowerCase("PRESSURE_TEST"), "Pressure Test")
+        self.assertEqual(Operations.toStringLowerCase(Operations.NONE), "None")
+        self.assertEqual(Operations.toStringLowerCase(Operations.PRESSURE_SELF_TEST), "Pressure Self Test")
+        self.assertEqual(Operations.toStringLowerCase(Operations.PRESSURE_TEST), "Pressure Test")
 
     def test_enum_values(self):
         self.assertEqual(Operations.NONE.value, 0)

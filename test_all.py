@@ -2,6 +2,7 @@ import unittest
 from PyQt5.QtWidgets import QApplication
 import sys
 import os
+import logging
 
 def load_tests(loader, standard_tests, pattern):
     suite = unittest.TestSuite()
@@ -15,8 +16,13 @@ def load_tests(loader, standard_tests, pattern):
     return suite
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)  # Create a QApplication instance
+    logging.disable(logging.CRITICAL)
+
+    app = QApplication(sys.argv)  
     suite = load_tests(unittest.defaultTestLoader, None, None)
     runner = unittest.TextTestRunner()
-    runner.run(suite)
-    app.quit()  # Ensure the QApplication instance is properly closed
+    result = runner.run(suite)
+    app.quit()  
+
+    # Display the total number of tests run
+    print(f"Ran {result.testsRun} tests")

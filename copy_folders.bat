@@ -1,3 +1,4 @@
+REM scp -r "C:\Users\Tristan\OneDrive\Desktop\testingApp" raspberry@192.168.0.83:/home/raspberry/
 @echo off
 setlocal
 
