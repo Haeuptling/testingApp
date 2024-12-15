@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QDialog, QDialogButtonBox, QSizePolicy
 from PyQt5.QtGui import QFont, QPixmap, QPainter, QColor
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtChart import QChartView, QLineSeries, QValueAxis, QChart
@@ -28,6 +28,10 @@ class MeasurementView(QWidget):
         # Chart Views
         self.chart_view_pressure = self.create_chart_view("Pressure over Time", "Time in minutes", "Pressure in mbar", "lightgreen")
         self.chart_view_dewpoint = self.create_chart_view("Dewpoint", "Time in seconds", "Relative humidity", "darkorange")
+        
+        self.chart_view_pressure.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.chart_view_dewpoint.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
         self.chart_view_dewpoint.setVisible(False)
 
         main_layout.addWidget(self.chart_view_pressure)
@@ -36,25 +40,26 @@ class MeasurementView(QWidget):
         # Current Value Labels
         self.current_pressure_label = QLabel("Current Pressure: 0 mbar")
         self.current_pressure_label.setFont(QFont("", 10))
-        self.current_pressure_label.setStyleSheet("color: white;")
+        self.current_pressure_label.setStyleSheet("color: lightgreen;")
         self.current_pressure_label.setAlignment(Qt.AlignRight)
         main_layout.addWidget(self.current_pressure_label)
 
         self.current_dewpoint_label = QLabel("Current Dewpoint: 0 %")
         self.current_dewpoint_label.setFont(QFont("", 10))
-        self.current_dewpoint_label.setStyleSheet("color: white;")
+        self.current_dewpoint_label.setStyleSheet("color: darkorange;")
         self.current_dewpoint_label.setAlignment(Qt.AlignRight)
         self.current_dewpoint_label.setVisible(False)
         main_layout.addWidget(self.current_dewpoint_label)
 
         # Button Layout
         button_layout = QHBoxLayout()
-        button_layout.setContentsMargins(20, 20, 0, 20)
+        button_layout.setContentsMargins(20, 0, 20, 0)
 
         # Abort Button
         self.abort_button = QPushButton("Abort")
         self.abort_button.setFont(QFont("", 22))
         self.abort_button.setStyleSheet("background-color: white; border-radius: 10px;")
+        self.abort_button.setFixedHeight(40)  
         self.abort_button.clicked.connect(self.show_abort_popup)
         button_layout.addWidget(self.abort_button, alignment=Qt.AlignLeft)
 
@@ -63,6 +68,7 @@ class MeasurementView(QWidget):
         self.switch_button.setFont(QFont("", 22))
         self.switch_button.setStyleSheet("background-color: white; border-radius: 10px;")
         self.switch_button.clicked.connect(self.switch_chart)
+        self.switch_button.setFixedHeight(40)
         button_layout.addWidget(self.switch_button, alignment=Qt.AlignRight)
 
         main_layout.addLayout(button_layout)
@@ -77,6 +83,7 @@ class MeasurementView(QWidget):
         chart.setTitleFont(QFont("", 10))
         chart.setTitleBrush(Qt.white)
         chart.setBackgroundBrush(Qt.transparent)
+        chart.legend().hide()
         chart_view.setChart(chart)
 
         series = QLineSeries()
@@ -86,16 +93,18 @@ class MeasurementView(QWidget):
 
         axis_x = QValueAxis()
         axis_x.setTitleText(x_title)
-        axis_x.setTitleFont(QFont("", 6))
-        axis_x.setLabelsFont(QFont("", 6))
+        axis_x.setTitleFont(QFont("", 10))
+        axis_x.setLabelsFont(QFont("", 10))
         axis_x.setLabelsBrush(Qt.white)
+        axis_x.setTitleBrush(Qt.white)
         axis_x.setRange(0, 5 if x_title == "Time in minutes" else 5)
         chart.setAxisX(axis_x, series)
 
         axis_y = QValueAxis()
         axis_y.setTitleText(y_title)
-        axis_y.setTitleFont(QFont("", 6))
-        axis_y.setLabelsFont(QFont("", 6))
+        axis_y.setTitleFont(QFont("", 10))
+        axis_y.setLabelsFont(QFont("", 10))
+        axis_y.setTitleBrush(Qt.white)
         axis_y.setLabelsBrush(Qt.white)
         if y_title == "Pressure in mbar":
             axis_y.setRange(0, 400)
