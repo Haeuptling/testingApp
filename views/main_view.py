@@ -69,6 +69,12 @@ class MainView(QMainWindow):
         settings_button.clicked.connect(lambda: self.view_changed.emit("SettingsView"))
         menu_layout.addWidget(settings_button)
 
+        close_button = QPushButton("Close")
+        close_button.setFont(QFont("", 26))
+        close_button.setStyleSheet(button_style)
+        close_button.clicked.connect(self.close)
+        menu_layout.addWidget(close_button)
+
         main_layout.addWidget(menu_container)
 
         self.content_view = QStackedWidget()

@@ -14,7 +14,8 @@ class SingletonMeta(type):
         return cls._instances[cls]
 
 class ConfigManager(metaclass=SingletonMeta):
-    def __init__(self, config_file='models/config.ini'):
+    # def __init__(self, config_file='models/config.ini'):
+    def __init__(self, config_file='/home/raspberry/testingApp/models/config.ini'):
         self.config_file = config_file
         self.config = configparser.ConfigParser()
         self.load_config()
@@ -86,10 +87,10 @@ class ConfigManager(metaclass=SingletonMeta):
         return int(self.config['Modbus']['PressureEmitterRegisters'])
 
     def get_dewpoint_emitter_slave_id(self):
-        return int(self.config['Modbus']['DewpointEmiiterSlaveId'])
+        return int(self.config['Modbus']['DewpointEmitterSlaveId'])
 
     def get_dewpoint_emitter_start_address(self):
-        return int(self.config['Modbus']['DewpointEmiiterStartAdress'])
+        return int(self.config['Modbus']['DewpointEmitterStartAdress'])
 
     def get_dewpoint_emitter_registers(self):
         return int(self.config['Modbus']['DewpointEmitterRegisters'])
@@ -153,27 +154,27 @@ class ConfigManager(metaclass=SingletonMeta):
         self.save_config()
 
     def set_pressure_emitter_slave_id(self, value):
-        self.config['DEFAULT']['PressureEmitterSlaveId'] = str(value)
+        self.config['Modbus']['PressureEmitterSlaveId'] = str(value)
         self.save_config()
 
     def set_pressure_emitter_start_address(self, value):
-        self.config['DEFAULT']['PressureEmitterStartAddress'] = str(value)
+        self.config['Modbus']['PressureEmitterStartAddress'] = str(value)
         self.save_config()
 
     def set_pressure_emitter_registers(self, value):
-        self.config['DEFAULT']['PressureEmitterRegisters'] = str(value)
+        self.config['Modbus']['PressureEmitterRegisters'] = str(value)
         self.save_config()
 
     def set_dewpoint_emitter_slave_id(self, value):
-        self.config['DEFAULT']['DewpointEmitterSlaveId'] = str(value)
+        self.config['Modbus']['DewpointEmitterSlaveId'] = str(value)
         self.save_config()
 
     def set_dewpoint_emitter_start_address(self, value):
-        self.config['DEFAULT']['DewpointEmitterStartAddress'] = str(value)
+        self.config['Modbus']['DewpointEmitterStartAddress'] = str(value)
         self.save_config()
 
     def set_dewpoint_emitter_registers(self, value):
-        self.config['DEFAULT']['DewpointEmitterRegisters'] = str(value)
+        self.config['Modbus']['DewpointEmitterRegisters'] = str(value)
         self.save_config()
 
     def save_config(self):

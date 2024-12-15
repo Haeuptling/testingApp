@@ -39,8 +39,8 @@ class MeasurementController(QObject):
         self.total_duration_pressure = config.get_total_duration_min() * self.timer.msMultiplier * self.timer.minMultiplier
         self.interval_time = config.get_interval_time_s() * self.timer.msMultiplier
 
-        self.port_pressure = '/dev/ttyUSB0'#config.get_port_pressure_emitter()
-        self.port_dewpoint ='/dev/ttyUSB1'# config.get_port_dewpoint_emitter()
+        self.port_pressure = config.get_port_pressure_emitter()
+        self.port_dewpoint = config.get_port_dewpoint_emitter()
 
         self.pressure_emitter_id = config.get_pressure_emitter_slave_id()
         self.pressure_emitter_start_adress = config.get_pressure_emitter_start_address()
@@ -101,11 +101,12 @@ class MeasurementController(QObject):
         return self.Saver.export_file_to_usb(self.saving_path + source_file_path)
 
     def update_settings(self):
-        config = ConfigManager()
-        self.total_duration_pressure = config.get_total_duration_min() * self.timer.msMultiplier * self.timer.minMultiplier
-        self.interval_time = config.get_interval_time_s() * self.timer.msMultiplier
-        self.measurement.set_maximum_pressure_difference_in_percent(config.get_maximum_pressure_difference_in_percent())
-        self.measurement.set_maximum_humidity_difference_in_percent(config.get_maximum_relative_humidity_difference_in_percent())
+        if(not self.is_measurement_running):
+            config = ConfigManager()
+            self.total_duration_pressure = config.get_total_duration_min() * self.timer.msMultiplier * self.timer.minMultiplier
+            self.interval_time = config.get_interval_time_s() * self.timer.msMultiplier
+            self.measurement.set_maximum_pressure_difference_in_percent(config.get_maximum_pressure_difference_in_percent())
+            self.measurement.set_maximum_humidity_difference_in_percent(config.get_maximum_relative_humidity_difference_in_percent())
 
     def get_total_duration_pressure(self):
         return self.total_duration_pressure

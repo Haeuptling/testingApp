@@ -57,7 +57,9 @@ class HomeView(QWidget):
 
         # Logo
         base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
-        logo_path = os.path.join(base_path, "images/Q_logo.png")
+        
+        # logo_path = os.path.join(base_path, "images/Q_logo.png")
+        logo_path = os.path.join("/home/raspberry/testingApp/images/Q_Logo.png")
         logo_label = QLabel(self)
         pixmap = QPixmap(logo_path)
         if pixmap.isNull():

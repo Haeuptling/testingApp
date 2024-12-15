@@ -44,7 +44,8 @@ class MeasurementView(QWidget):
         self.current_pressure_label.setAlignment(Qt.AlignRight)
         main_layout.addWidget(self.current_pressure_label)
 
-        self.current_dewpoint_label = QLabel("Current Dewpoint: 0 %")
+        #self.current_dewpoint_label = QLabel("Current Dewpoint: 0 %")
+        self.current_dewpoint_label = QLabel("Current Dewpoint: 0 °C")
         self.current_dewpoint_label.setFont(QFont("", 10))
         self.current_dewpoint_label.setStyleSheet("color: darkorange;")
         self.current_dewpoint_label.setAlignment(Qt.AlignRight)
