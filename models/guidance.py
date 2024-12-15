@@ -2,7 +2,9 @@ import os
 
 class Guidance:
     def __init__(self):
-        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Gehe ein Verzeichnis nach oben
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
+
+        # Gemeinsame Bilder beider Tests
         self.preparation_overpressure_images = [
             os.path.join(base_path, "images/Guidance_preparation_overpressure_1.png"),
             os.path.join(base_path, "images/Guidance_preparation_overpressure_2.png"),
@@ -14,6 +16,7 @@ class Guidance:
             os.path.join(base_path, "images/Guidance_preparation_overpressure_8.png")
         ]
 
+        # Gemeinsame Texte beider Tests
         self.preparation_overpressure_instruction_texts = [
         "1. Close all shut-off valves",
         "2. Set the three-way valve to overpressure",
@@ -25,23 +28,27 @@ class Guidance:
         "8. Slowly set the pressure regulator  to the test pressure of 200 mbar"
         ]
 
+        # Bilder Überdruckprüfung
         self.overpressure_images = [
             os.path.join(base_path, "images/Guidance_overpressure_1.png"),
             os.path.join(base_path, "images/Guidance_overpressure_2.png"),
             os.path.join(base_path, "images/Guidance_overpressure_3.png")
         ]
 
+        # Texte Überdruckprüfung
         self.overpressure_instruction_texts = [
             "9. Connect the hoses of the DUT to the test system",
             "10. Open the shut-off valve of the DUT",
             "11. Check the pressure gauge until the test pressure is constantly reached"
         ]
 
+        # Bilder Eigentest Überdruckprüfung
         self.overpressure_self_test_images = [
             os.path.join(base_path, "images/Guidance_selftest_overpressure_1.png"),
             os.path.join(base_path, "images/Guidance_selftest_overpressure_2.png")
         ]
 
+        # Texte Eigentest Überdruckprüfung
         self.overpressure_self_test_instruction_texts = [
             "9. Check the pressure gauge until the test pressure is constantly reached",
             "10. Close the inlet valve"

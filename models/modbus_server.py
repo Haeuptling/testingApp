@@ -11,7 +11,7 @@ class ModbusServer(QObject):
         self.modbus_client = None
         config = ConfigManager()
 
-        #self.port = config.get_port()
+
         self.baudRate = config.get_baud_rate()
         self.parity = config.get_parity()
         self.stop_bits = config.get_stop_bits()
@@ -46,6 +46,12 @@ class ModbusServer(QObject):
         print("Modbus Connected")
         return True
 
+    """"
+    Liest die angeforderten Register aus und sendet die Werte zurück.
+    :param start_address: Die Startadresse der zu lesenden Register.
+    :param number_of_registers: Die Anzahl der zu lesenden Register.
+    :param slave_id: Die Slave-ID des Modbus-Geräts.
+    """
     def handle_read_registers(self, start_address, number_of_registers, slave_id):
         register_values = []
 
