@@ -16,7 +16,7 @@ class ModbusServerWorker(QThread):
         if self.isRunning():
             self.stop_worker()
 
-    def run_worker(self):
+    def run(self):
         self.modbus_server = ModbusServer()
         self.start_modbus.connect(self.modbus_server.connect_modbus)
         self.read_registers_signal.connect(self.modbus_server.handle_read_registers)
@@ -32,6 +32,7 @@ class ModbusServerWorker(QThread):
 
     @pyqtSlot(str)
     def emit_start_modbus(self, port):
+        print("emit start modbus ", port)
         self.start_modbus.emit(port)
         
     def stop_worker(self):
@@ -41,8 +42,8 @@ class ModbusServerWorker(QThread):
             self.modbus_server.deleteLater()
             self.modbus_server = None
 
-        self.quit()
-        self.wait()
+        # self.quit()
+        # self.wait()
 
     def read_registers(self, start_address, registers, slave_id):
         QMetaObject.invokeMethod(self, "emit_read_registers", Qt.QueuedConnection, Q_ARG(int, start_address), Q_ARG(int, registers), Q_ARG(int, slave_id))

@@ -33,8 +33,8 @@ class MeasurementController(QObject):
         self.is_pressure_selftest_done = False
         self.measurement = Measurement()
         self.main_window = main_window
-        self.pressure_value = 0
-        self.relative_humidity_value = 0
+        self.pressure_value = []
+        self.relative_humidity_value = []
         config = ConfigManager()
         self.total_duration_pressure = config.get_total_duration_min() * self.timer.msMultiplier * self.timer.minMultiplier
         self.interval_time = config.get_interval_time_s() * self.timer.msMultiplier
@@ -84,6 +84,7 @@ class MeasurementController(QObject):
 
     def start_selftest_overpressure_measurement(self):
         if not self.get_is_measurement_running():
+            print("Start selftest overpressure measurement")
             self.set_is_measurement_running(True)
             self.timer.start_timer(self.total_duration_pressure, self.interval_time)
             self.modbus_server_worker_pressure.start_worker(self.port_pressure)
@@ -185,8 +186,8 @@ class MeasurementController(QObject):
             print(f"setPressureRegister {register_values[4]}")
         else:
             registers = [register_values[0], register_values[1]]
-            float_value = self.interpret_registers_as_float(registers)
-            self.set_relative_humidity_value(float_value)
+            # float_value = self.interpret_registers_as_float(registers)
+            self.set_relative_humidity_value(register_values)
             print(f"set humidity values {register_values}")
 
     def get_current_date_time(self):
@@ -259,18 +260,6 @@ class MeasurementController(QObject):
             print(f"Error writing to JSON: {path}, {e}")
             return False
 
-    # def on_interval(self, elapsed_ms):
-    #     elapsed_seconds = elapsed_ms // 100
-    #     print("-----------------------------------------")
-    #     if self.current_operation == Operations.PRESSURE_SELF_TEST:
-    #         # self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-    #         self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
-    #     elif self.current_operation == Operations.PRESSURE_TEST:
-    #         self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-    #         self.modbus_server_worker_dewpoint.read_registers(2301, 2, self.dewpoint_emitter_id)
-    #         self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
-    #         self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)
-
     def on_interval(self, elapsed_ms):
         elapsed_seconds = elapsed_ms // Timer.msMultiplier
         print("-----------------------------------------")
@@ -279,6 +268,6 @@ class MeasurementController(QObject):
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
         elif self.current_operation == Operations.PRESSURE_TEST:
             self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-            self.modbus_server_worker_dewpoint.read_registers(self.dewpoint_emitter_Start_adress, self.dewpoint_emitter_registers, self.dewpoint_emitter_id)
+            self.modbus_server_worker_dewpoint.read_registers(2303, 2, self.dewpoint_emitter_id)
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
             self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)

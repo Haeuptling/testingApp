@@ -27,7 +27,7 @@ class MeasurementView(QWidget):
 
         # Chart Views
         self.chart_view_pressure = self.create_chart_view("Pressure over Time", "Time in minutes", "Pressure in mbar", "lightgreen")
-        self.chart_view_dewpoint = self.create_chart_view("Dewpoint", "Time in seconds", "Relative humidity", "darkorange")
+        self.chart_view_dewpoint = self.create_chart_view("Dewpoint", "Time in seconds", "Relative humidity in %", "darkorange")
         
         self.chart_view_pressure.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.chart_view_dewpoint.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -38,15 +38,14 @@ class MeasurementView(QWidget):
         main_layout.addWidget(self.chart_view_dewpoint)
 
         # Current Value Labels
-        self.current_pressure_label = QLabel("Current Pressure: 0 mbar")
-        self.current_pressure_label.setFont(QFont("", 10))
+        self.current_pressure_label = QLabel("Current Pressure: 0.0 mbar")
+        self.current_pressure_label.setFont(QFont("", 22))
         self.current_pressure_label.setStyleSheet("color: lightgreen;")
         self.current_pressure_label.setAlignment(Qt.AlignRight)
         main_layout.addWidget(self.current_pressure_label)
 
-        #self.current_dewpoint_label = QLabel("Current Dewpoint: 0 %")
-        self.current_dewpoint_label = QLabel("Current Dewpoint: 0 °C")
-        self.current_dewpoint_label.setFont(QFont("", 10))
+        self.current_dewpoint_label = QLabel("Current Relative Humidity: 0 %")
+        self.current_dewpoint_label.setFont(QFont("", 22))
         self.current_dewpoint_label.setStyleSheet("color: darkorange;")
         self.current_dewpoint_label.setAlignment(Qt.AlignRight)
         self.current_dewpoint_label.setVisible(False)
@@ -110,7 +109,7 @@ class MeasurementView(QWidget):
         if y_title == "Pressure in mbar":
             axis_y.setRange(0, 400)
         else:
-            axis_y.setRange(-60, 40)
+            axis_y.setRange(0, 100)
         chart.setAxisY(axis_y, series)
 
         if title == "Pressure over Time":
@@ -128,7 +127,7 @@ class MeasurementView(QWidget):
         self.chart_view_dewpoint.setVisible(not self.show_first_chart)
         self.current_pressure_label.setVisible(self.show_first_chart)
         self.current_dewpoint_label.setVisible(not self.show_first_chart)
-        self.switch_button.setText("Switch to Dewpoint" if self.show_first_chart else "Switch to Overpressure")
+        self.switch_button.setText("Switch to Relative Humidity" if self.show_first_chart else "Switch to Overpressure")
 
     def show_abort_popup(self):
         confirm_abort_popup = QDialog(self)
@@ -231,6 +230,6 @@ class MeasurementView(QWidget):
         self.series_dewpoint.clear()
         for value in dewpoint_values:
             self.series_dewpoint.append(value)
-            self.current_dewpoint_label.setText(f"Current Dewpoint: {value.y()} %")
+            self.current_dewpoint_label.setText(f"Current Relative Humidity: {value.y()} %")
             if value.x() >= self.axis_x_dewpoint.max() - 1:
                 self.axis_x_dewpoint.setMax(self.axis_x_dewpoint.max() + 5)

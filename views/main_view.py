@@ -23,7 +23,7 @@ class MainView(QMainWindow):
         main_layout.setSpacing(0)
         self.setStyleSheet("background-color: #525c60;")
 
-        # Menu container with background color
+        # Menu container mit background color
         menu_container = QWidget()
         menu_container.setStyleSheet("background-color: #31373A;")
         menu_container.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
@@ -34,8 +34,9 @@ class MainView(QMainWindow):
         button_style = """
             QPushButton {
                 background-color: white;
-                border-radius: 15px;
-                font-size: 18px;
+                bborder-radius: 15px;
+                font-size: 20px;  
+                padding: 0px;  
             }
             QPushButton:hover {
                 background-color: #e0e0e0;
@@ -46,7 +47,7 @@ class MainView(QMainWindow):
         """
 
         home_button = QPushButton("Home")
-        home_button.setFont(QFont("", 26))
+        #home_button.setFont(QFont("", 26))
         home_button.setStyleSheet(button_style)
         home_button.clicked.connect(lambda: self.view_changed.emit("HomeView"))
         menu_layout.addWidget(home_button)
@@ -58,19 +59,19 @@ class MainView(QMainWindow):
         menu_layout.addWidget(measurement_button)
 
         export_button = QPushButton("Export")
-        export_button.setFont(QFont("", 26))
+        # export_button.setFont(QFont("", 26))
         export_button.setStyleSheet(button_style)
-        export_button.clicked.connect(self.show_export_view)#self.measurement_controller.load_data()
+        export_button.clicked.connect(self.show_export_view)
         menu_layout.addWidget(export_button)
 
         settings_button = QPushButton("Settings")
-        settings_button.setFont(QFont("", 26))
+        # settings_button.setFont(QFont("", 26))
         settings_button.setStyleSheet(button_style)
         settings_button.clicked.connect(lambda: self.view_changed.emit("SettingsView"))
         menu_layout.addWidget(settings_button)
 
         close_button = QPushButton("Close")
-        close_button.setFont(QFont("", 26))
+        # close_button.setFont(QFont("", 26))
         close_button.setStyleSheet(button_style)
         close_button.clicked.connect(self.close)
         menu_layout.addWidget(close_button)

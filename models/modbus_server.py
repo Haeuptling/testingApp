@@ -50,11 +50,11 @@ class ModbusServer(QObject):
     Liest die angeforderten Register aus und sendet die Werte zurück.
     :param start_address: Die Startadresse der zu lesenden Register.
     :param number_of_registers: Die Anzahl der zu lesenden Register.
-    :param slave_id: Die Slave-ID des Modbus-Geräts.
+    :param slave_id: Die Slave-ID Modbusclient.
     """
     def handle_read_registers(self, start_address, number_of_registers, slave_id):
         register_values = []
-
+        print(f"Reading registers: {start_address} - {number_of_registers} - {slave_id}")
         if self.modbus_client:
             result = self.modbus_client.read_holding_registers(
                 address=start_address,
@@ -66,7 +66,7 @@ class ModbusServer(QObject):
                 print("Reading registers requested. --------------------------")
                 for i in range(number_of_registers):
                     register_values.append(result.getRegister(i))
-
+                print(f"Registers: {register_values}")
                 self.serverRegisterAnswer.emit(register_values)
             else:
                 print(f"Error while reading registers: {result}")

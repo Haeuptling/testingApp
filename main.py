@@ -18,7 +18,6 @@ class AppController:
         self.measurement_controller.main_window = self.main_view
 
 
-        # Setze Fenstergröße und Vollbildmodus
         if self.config.get_fullscreen():
             self.main_view.showFullScreen()
         else:
