@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Start TestingApp
+Comment=Start the TestingApp application
+Exec=lxterminal -e python3 /home/raspberry/testingApp/main.py
+Icon=utilities-terminal
+Terminal=false
+Type=Application
