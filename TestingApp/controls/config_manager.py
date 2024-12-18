@@ -14,8 +14,8 @@ class SingletonMeta(type):
         return cls._instances[cls]
 
 class ConfigManager(metaclass=SingletonMeta):
-    # def __init__(self, config_file='models/config.ini'):
-    def __init__(self, config_file='/home/raspberry/testingApp/models/config.ini'):
+    def __init__(self, config_file='models/config.ini'):
+    # def __init__(self, config_file='/home/raspberry/testingApp/models/config.ini'):
         self.config_file = config_file
         self.config = configparser.ConfigParser()
         self.load_config()

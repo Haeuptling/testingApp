@@ -30,12 +30,15 @@ class Measurement(QObject):
         if(len(pressure_value) != 0):
 
             pressure = pressure_value[4] 
+            print(f"pressure_value[3]{pressure_value[3]}")
 
             if(pressure_value[4] != 0):
-                pressure_unit_shift = self.pressure_sihft(pressure_value[5])
-                multpiplicator_unit_multiplicator = self.pressure_unit_multiplicator(pressure_value[3])
+                pressure_unit_shift = self.pressure_sihft(pressure_value[3])
+                print(f"pressure_unit_shift{pressure_unit_shift}")
+                multpiplicator_unit_multiplicator = self.pressure_unit_multiplicator(pressure_value[5])
+                print(f"multpiplicator_unit_multiplicator{multpiplicator_unit_multiplicator}")
                 pressure = (pressure_value[4]  / pressure_unit_shift) * multpiplicator_unit_multiplicator
-            
+                print(f"pressure{pressure}")
             temp_val = QPointF()
             temp_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
             temp_val.setY(pressure)

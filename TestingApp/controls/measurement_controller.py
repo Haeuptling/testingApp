@@ -264,8 +264,8 @@ class MeasurementController(QObject):
         elapsed_seconds = elapsed_ms // Timer.msMultiplier
         print("-----------------------------------------")
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
-            self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-            self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
+            #self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+            self.measurement.generate_pressure_values(elapsed_seconds, [70, 3, 0, 3, 20, 2])
         elif self.current_operation == Operations.PRESSURE_TEST:
             self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
             self.modbus_server_worker_relative_humidity.read_registers(2303, 2, self.dewpoint_emitter_id)
