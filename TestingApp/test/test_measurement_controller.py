@@ -27,7 +27,6 @@ class TestMeasurementView(unittest.TestCase):
         self.assertNotEqual(self.measurement_view.show_first_chart, initial_state)
 
 
-
     def test_save_chart_image(self):
         with patch.object(self.measurement_view, 'save_chart_image', return_value=True) as mock_save_chart_image:
             result = self.measurement_view.save_chart_image("test_chart.png")
