@@ -29,12 +29,12 @@ class Measurement(QObject):
     def generate_pressure_values(self, elapsed_seconds, pressure_value):           
         if(len(pressure_value) != 0):
 
-            pressure = pressure_value[4] * 10
+            pressure = pressure_value[4] 
 
-            # if(pressure_value[4] != 0):
-            #     pressure_unit_shift = self.pressure_sihft(pressure_value[5])
-            #     multpiplicator_unit_multiplicator = self.pressure_unit_multiplicator(pressure_value[3])
-            #     pressure = pressure_value[4]  // pressure_unit_shift * multpiplicator_unit_multiplicator
+            if(pressure_value[4] != 0):
+                pressure_unit_shift = self.pressure_sihft(pressure_value[5])
+                multpiplicator_unit_multiplicator = self.pressure_unit_multiplicator(pressure_value[3])
+                pressure = (pressure_value[4]  / pressure_unit_shift) * multpiplicator_unit_multiplicator
             
             temp_val = QPointF()
             temp_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
