@@ -72,21 +72,6 @@ class TestSaver(unittest.TestCase):
         result = self.saver.take_screenshot(save_path, window)
         self.assertTrue(result)
 
-    # @patch('reportlab.pdfgen.canvas.Canvas.save')
-    # @patch('reportlab.pdfgen.canvas.Canvas.drawImage')
-    # @patch('reportlab.pdfgen.canvas.Canvas.__init__', return_value=None)
-    # @patch('reportlab.pdfgen.canvas.Canvas.saveState')
-    # @patch('reportlab.pdfgen.canvas.Canvas.restoreState')
-    # def test_save_screenshot_to_pdf(self, mock_restore_state, mock_save_state, mock_canvas_init, mock_draw_image, mock_save):
-    #     pdf_path = 'test.pdf'
-    #     current_operation = Operations.PRESSURE_TEST
-    #     result = True
-    #     current_time = '2023-01-01 12:00:00'
-
-    #     self.saver.save_screenshot_to_pdf(pdf_path, current_operation, result, current_time)
-    #     mock_canvas_init.assert_called_once_with(pdf_path, pagesize=letter)
-    #     mock_save.assert_called_once()
-
     @patch('shutil.copy')
     @patch('os.path.exists', side_effect=[True, True])
     def test_export_file_to_usb_success(self, mock_exists, mock_copy):

@@ -54,7 +54,6 @@ class Saver(QObject):
             print("No screen found")
             return False
 
-        # Fenster-ID 
         window_id = window.winId()
         screenshot = screen.grabWindow(window_id)
         

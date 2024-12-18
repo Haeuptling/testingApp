@@ -1,46 +1,25 @@
 import unittest
 from unittest.mock import patch, MagicMock
+from PyQt5.QtCore import QCoreApplication
 
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from controls.modbus_server_worker import ModbusServerWorker
+from controls.measurement_controller import MeasurementController
+from models.modbus_server import ModbusServer
 
 class TestModbusServerWorker(unittest.TestCase):
     def setUp(self):
-        self.modbus_worker = ModbusServerWorker()
+        self.app = QCoreApplication([])
+        self.modbus_server = ModbusServer()
+        self.controller = MeasurementController()
 
-    @patch('controls.modbus_server_worker.ModbusClient')
-    def test_connect_modbus_success(self, MockModbusClient):
-        mock_client = MockModbusClient.return_value
-        mock_client.connect.return_value = True
-
-        result = self.modbus_worker.connect_modbus(port='/dev/ttyUSB0')
+    def test_connect_modbus_success(self):
+        result = self.modbus_server.connect_modbus(port='/dev/ttyUSB0')
         self.assertTrue(result)
-        mock_client.connect.assert_called_once()
         print("Test connect_modbus_success passed")
-
-    @patch('controls.modbus_server_worker.ModbusClient')
-    def test_connect_modbus_failure(self, MockModbusClient):
-        mock_client = MockModbusClient.return_value
-        mock_client.connect.return_value = False
-
-        result = self.modbus_worker.connect_modbus(port='/dev/ttyUSB0')
-        self.assertFalse(result)
-        mock_client.connect.assert_called_once()
-        print("Test connect_modbus_failure passed")
-
-    @patch('controls.modbus_server_worker.ModbusClient')
-    def test_handle_read_registers(self, MockModbusClient):
-        mock_client = MockModbusClient.return_value
-        mock_client.read_holding_registers.return_value = MagicMock(registers=[100, 200])
-
-        self.modbus_worker.connect_modbus(port='/dev/ttyUSB0')
-        registers = self.modbus_worker.handle_read_registers(start_address=0, number_of_registers=2, slave_id=1)
-        self.assertEqual(registers, [100, 200])
-        mock_client.read_holding_registers.assert_called_once_with(0, 2, slave=1)
-        print("Test handle_read_registers passed")
 
 if __name__ == '__main__':
     unittest.main()

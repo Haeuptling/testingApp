@@ -20,9 +20,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)  
     suite = load_tests(unittest.defaultTestLoader, None, None)
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(verbosity=2) 
     result = runner.run(suite)
     app.quit()  
 
-    # Display the total number of tests run
-    print(f"Ran {result.testsRun} tests")

@@ -27,7 +27,7 @@ class TestConfigManager(unittest.TestCase):
         self.assertEqual(self.config_manager.get_dewpoint_emitter_slave_id(), 53)
         self.assertEqual(self.config_manager.get_dewpoint_emitter_start_address(), 2000)
         self.assertEqual(self.config_manager.get_dewpoint_emitter_registers(), 20)
-        self.assertEqual(self.config_manager.get_window_width(), 680)
+        self.assertEqual(self.config_manager.get_window_width(), 800)
         self.assertEqual(self.config_manager.get_window_height(), 480)
         self.assertTrue(self.config_manager.get_fullscreen())
         self.assertEqual(self.config_manager.get_maximum_pressure_difference_in_percent(), 3)

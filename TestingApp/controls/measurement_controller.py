@@ -101,6 +101,9 @@ class MeasurementController(QObject):
     def export_file_to_usb(self, source_file_path):
         return self.Saver.export_file_to_usb(self.saving_path + source_file_path)
 
+    """
+    Aktualisiert die Einstellungen für die Messung.
+    """
     def update_settings(self):
         if(not self.is_measurement_running):
             config = ConfigManager()
@@ -161,7 +164,10 @@ class MeasurementController(QObject):
         elif self.current_operation == Operations.NONE:
             count = 0
         return count
-
+    
+    """
+    Abbrechen der Messung.
+    """
     def abort_measurement(self):
         self.timer.stop_timer()
         self.measurement.delete_pressure_values()
@@ -180,20 +186,19 @@ class MeasurementController(QObject):
         self.relative_humidity_value = new_relative_humidity_value
 
     def set_register_value(self, register_values):
-        print(f"Received register values: {register_values}")
         if register_values[0] == self.pressure_emitter_id:
             self.set_pressure_value(register_values)
-            print(f"setPressureRegister {register_values[4]}")
         else:
             registers = [register_values[0], register_values[1]]
-            # float_value = self.interpret_registers_as_float(registers)
             self.set_relative_humidity_value(register_values)
-            print(f"set humidity values {register_values}")
 
     def get_current_date_time(self):
         current = QDateTime.currentDateTime()
         return current.toString("dd.MM.yyyy_HH.mm.ss")
-
+    
+    """
+    Beenden der Messung und Speichern der Daten.
+    """
     def on_timeout(self):
         result = False
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
@@ -209,10 +214,9 @@ class MeasurementController(QObject):
         current_time = self.get_current_date_time()
         screenshot_path = os.path.join(self.saving_path, 'saves', f"{current_time}.png")
         pdf_path = os.path.join(self.saving_path, 'saves', f"{current_time}_{Operations.toString(self.current_operation)}.pdf")
-        # text = f"Measurement: {Operations.toString(self.current_operation)} successful: {result} \newline Time : {current_time}"
 
         if self.Saver.take_screenshot(screenshot_path, self.main_window):
-            os.remove(screenshot_path)  # Entfernen der temporären Bilddatei
+            os.remove(screenshot_path)  
         else:
             print("Failed to take screenshot")
 
@@ -223,21 +227,6 @@ class MeasurementController(QObject):
             self.measurement_not_successfully_completed.emit()
         self.set_is_measurement_running(False)
         self.Saver.save_screenshot_to_pdf(pdf_path, self.current_operation, result, current_time)
-
-    # def load_data(self):
-    #     self.view_changed.emit("ExportView")
-
-
-    def interpret_registers_as_float(self, registers):
-        if len(registers) == 2:
-            # Kombinieren der Registerwerte zu einem 32-Bit-Wert
-            combined = (registers[0] << 16) | registers[1]
-            # Interpretation als FLOAT
-            float_value = struct.unpack('>f', combined.to_bytes(4, byteorder='big'))[0]
-            return float_value
-        else:
-            print("Unexpected number of registers")
-            return None
 
     def save_data(self, result):
         current_time = self.get_current_date_time()
@@ -259,15 +248,21 @@ class MeasurementController(QObject):
         except IOError as e:
             print(f"Error writing to JSON: {path}, {e}")
             return False
-
+        
+    """
+    Anfrage zum Auslesend er Registerwerte. 
+    :param start_address: Die Startadresse der zu lesenden Register.
+    :param registers: Die Anzahl der zu lesenden Register.
+    :param slave_id: Die Slave-ID des Modbus-Clients.
+    """
     def on_interval(self, elapsed_ms):
         elapsed_seconds = elapsed_ms // Timer.msMultiplier
         print("-----------------------------------------")
         if self.current_operation == Operations.PRESSURE_SELF_TEST:
-            #self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-            self.measurement.generate_pressure_values(elapsed_seconds, [70, 3, 0, 3, 20, 2])
+            self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
+            self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
         elif self.current_operation == Operations.PRESSURE_TEST:
             self.modbus_server_worker_pressure.read_registers(self.pressure_emitter_start_adress, self.pressure_emitter_registers, self.pressure_emitter_id)
-            self.modbus_server_worker_relative_humidity.read_registers(2303, 2, self.dewpoint_emitter_id)
+            self.modbus_server_worker_relative_humidity.read_registers(self.dewpoint_emitter_Start_adress, self.dewpoint_emitter_registers, self.dewpoint_emitter_id)
             self.measurement.generate_pressure_values(elapsed_seconds, self.pressure_value)
             self.measurement.generate_relative_humidity_values(elapsed_seconds, self.relative_humidity_value)

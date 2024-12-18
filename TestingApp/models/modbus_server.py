@@ -41,7 +41,7 @@ class ModbusServer(QObject):
         if not self.modbus_client.connect():
             print("connection err")
             self.errorOccurred.emit("Connection error")
-            #return False
+            return False
 
         print("Modbus Connected")
         return True

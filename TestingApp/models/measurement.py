@@ -30,15 +30,12 @@ class Measurement(QObject):
         if(len(pressure_value) != 0):
 
             pressure = pressure_value[4] 
-            print(f"pressure_value[3]{pressure_value[3]}")
 
             if(pressure_value[4] != 0):
                 pressure_unit_shift = self.pressure_sihft(pressure_value[3])
-                print(f"pressure_unit_shift{pressure_unit_shift}")
                 multpiplicator_unit_multiplicator = self.pressure_unit_multiplicator(pressure_value[5])
-                print(f"multpiplicator_unit_multiplicator{multpiplicator_unit_multiplicator}")
                 pressure = (pressure_value[4]  / pressure_unit_shift) * multpiplicator_unit_multiplicator
-                print(f"pressure{pressure}")
+
             temp_val = QPointF()
             temp_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
             temp_val.setY(pressure)
@@ -56,21 +53,21 @@ class Measurement(QObject):
     def generate_relative_humidity_values(self, elapsed_seconds, relative_humidity_value):
         if(len(relative_humidity_value) != 0):
             
-            # MSB und LSB vertauschen
             hex_val = self.decimal_to_hex(relative_humidity_value[1]) +  self.decimal_to_hex(relative_humidity_value[0])
             temp_val = self.hex_to_float(hex_val)
 
-            temp_val = round(temp_val, 2) # 2 Dezimalstellen
+            temp_val = round(temp_val, 2) 
             
             relative_humidity_val = QPointF()
             relative_humidity_val.setX(self.convert_seconds_to_minutes(elapsed_seconds))
             relative_humidity_val.setY(temp_val)
+            print(f"relative_humidity_val{temp_val}")
             self.m_relativeHumidityValues.append(relative_humidity_val)
             self.relativeHumidityValueChanged.emit()
 
     """
-    Bewertet die relative Feuchtigkeit basierend auf den gespeicherten Werten.
-    :return: True, wenn die relative Feuchtigkeit innerhalb des prozentualen maximalen Unterschieds liegt, sonst False
+    Bewertet die relative Feuchtigkeit 
+    :return: True, wenn die relative Feuchtigkeit min. und max. innerhalb der Toleranzgrenze liegt, sonst False
     """
     def evaluate_relative_humidity(self):
 
@@ -82,8 +79,8 @@ class Measurement(QObject):
         return percentage_difference <= self.maximum_relative_humidity_difference_in_percent
 
     """
-    Bewertet den Druck basierend auf den gespeicherten Werten.
-    :return: True, wenn der Druck innerhalb des prozentualen maximalen Unterschieds liegt, sonst False
+    Bewertet den Druck 
+    :return: True, wenn der Druck min. und max. innerhalb der Toleranzgrenze liegt, sonst False 
     """
     def evaluate_pressure(self):
         if(len(self.m_pressureValues) == 0):
@@ -109,7 +106,10 @@ class Measurement(QObject):
 
 
     def pressure_unit_multiplicator(self, input_number):
-        if(input_number == 1): # KiloPascal
+        valids = [0, 1, 2, 5, 6, 7]
+        if(input_number not in valids):
+            return 1
+        elif(input_number == 1): # KiloPascal
             return 10
         elif(input_number == 2): # MegaPascal
             return 1000
@@ -119,6 +119,8 @@ class Measurement(QObject):
             return 68    
         elif(input_number == 7): # Pa
             return 100
+        else: 
+            return 1
     
     """
     Generierung von Dezimalzahlen basierend auf der Eingabe:
@@ -176,9 +178,7 @@ class Measurement(QObject):
             hex_val = hex_val[2:]
         
         hex_val = hex_val.zfill(8)
-        
         bytes_val = bytes.fromhex(hex_val)
-        
         float_val = struct.unpack('!f', bytes_val)[0]
         
         return float_val
