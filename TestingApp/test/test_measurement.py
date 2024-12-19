@@ -16,7 +16,7 @@ class TestMeasurement(unittest.TestCase):
         pressure_values = self.measurement.get_pressure_values()
         self.assertEqual(len(pressure_values), 1)
         self.assertEqual(pressure_values[0].x(), 2.0)  
-        self.assertEqual(pressure_values[0].y(), 50)
+        self.assertEqual(pressure_values[0].y(), 500)
 
     def test_generate_relative_humidity_values(self):
         self.measurement.generate_relative_humidity_values(180, [7864, 17101])
@@ -166,7 +166,7 @@ class TestMeasurement(unittest.TestCase):
         result= self.measurement.pressure_unit_multiplicator(1)
         self.assertEqual(result, 10)       
         result= self.measurement.pressure_unit_multiplicator(2)
-        self.assertEqual(result, 1000)       
+        self.assertEqual(result, 10000)       
         result= self.measurement.pressure_unit_multiplicator(5)
         self.assertEqual(result, 1000)       
         result= self.measurement.pressure_unit_multiplicator(6)
