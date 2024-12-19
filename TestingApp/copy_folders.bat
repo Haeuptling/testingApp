@@ -2,7 +2,7 @@ REM scp -r "C:\Users\Tristan\OneDrive\Desktop\testingApp" raspberry@192.168.0.83
 @echo off
 setlocal
 
-set SRC_DIR=^"C:\Users\Tristan Lilienthal\Documents\testingApp"
+set SRC_DIR=^"C:\Users\Tristan Lilienthal\Documents\testingApp\TestingApp"
 set DEST_DIR=raspberry@10.155.20.174:/home/raspberry/testingApp
 
 scp -r %SRC_DIR%\controls %DEST_DIR%

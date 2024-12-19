@@ -22,12 +22,13 @@ class Measurement(QObject):
         return self.m_pressureValues
 
     """
-    Generiert und speichert Druckwerte basierend auf der verstrichenen Zeit und dem Druckwert.
+    Generiert und speichert Druckwerte basierend auf den Registerwerten und der verstrichenen Zeit.
     :param elapsed_seconds: Verstrichene Zeit in Sekunden
-    :param pressure_value: Druckwert
+    :param pressure_value: Registerwerte
     """
     def generate_pressure_values(self, elapsed_seconds, pressure_value):           
         if(len(pressure_value) != 0):
+            print(f"pressure_value{pressure_value}")
 
             pressure = pressure_value[4] 
 
@@ -112,7 +113,7 @@ class Measurement(QObject):
         elif(input_number == 1): # KiloPascal
             return 10
         elif(input_number == 2): # MegaPascal
-            return 1000
+            return 10000
         elif(input_number == 5): # Bar
             return 1000
         elif(input_number == 6): # Psi

@@ -1,5 +1,8 @@
 from PyQt5.QtWidgets import QApplication
 
+import traceback
+
+
 from controls.config_manager import ConfigManager
 from controls.measurement_controller import MeasurementController
 from views.main_view import MainView
@@ -28,5 +31,11 @@ class AppController:
         self.app.exec_()
 
 if __name__ == "__main__":
-    app = AppController()
-    app.run()
+    try:
+        app = AppController()
+        app.run()
+    except Exception as e:
+        print("Ein Fehler ist aufgetreten:")
+        print(e)
+        traceback.print_exc()
+        input("Drücken Sie die Eingabetaste, um das Programm zu beenden...")
